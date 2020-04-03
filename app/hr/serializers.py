@@ -1,7 +1,17 @@
 from rest_framework import serializers
-from .models import UserModel
+from .models import EmployeModel,AccountModel,EmployAddressModel
 
-class UserSerializer(serializers.ModelSerializer):
+class EmployeSerializer(serializers.ModelSerializer):
     class Meta:
-        model=UserModel
-        fields=['id','fName','lName','email']
+        model=EmployeModel
+        fields = '__all__' 
+        
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=AccountModel
+        fields = '__all__' 
+
+class EmployeAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=EmployAddressModel
+        fields = '__all__'         
