@@ -25,7 +25,11 @@ SECRET_KEY = '&1ek&i(7twko7*jt$vmn*ujs4wlo(6o6cnate!6opa2hq!^m*t'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+<<<<<<< HEAD
+
+=======
+ALLOWED_HOSTS = ['0.0.0.0']
+>>>>>>> 8c17d32aa5e3269802bebba74f0c42e019d9f9de
 
 
 # Application definition
@@ -38,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'hr',
 ]
 
 MIDDLEWARE = [
@@ -71,8 +77,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'app.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -85,9 +89,16 @@ DATABASES = {
     }
 }
 
+EST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+}
 
-# Password validation
-# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
