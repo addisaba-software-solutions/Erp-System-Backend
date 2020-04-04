@@ -3,38 +3,163 @@ from django.db import models
 
 class DepartmentModel(models.Model): 
     departmentId = models.AutoField(primary_key=True,unique=True) 
-    departmentName=models.CharField(max_length=20,blank=True)
+    departmentName=models.CharField(max_length=20,blank=True,verbose_name="Department Name")
+
     def __str__(self):
        return self.departmentName
 
        
 class EmployeModel(models.Model): 
     employeId = models.AutoField(primary_key=True,unique=True ) 
-    firstName=models.CharField(max_length=15)
-    lastName=models.CharField(max_length=15)
+    firstName=models.CharField(max_length=15,verbose_name="First name")
+    lastName=models.CharField(max_length=15,verbose_name="Last name")
     email=models.CharField(max_length=30,blank=True,unique=True )
-    hiredDate=models.DateField(max_length=15)
+    hiredDate=models.DateField(max_length=15,verbose_name="Hired date")
     telephone=models.CharField(max_length=15)
-    birthDate=models.DateField(max_length=15)
-    termOfEmployment=models.DateField(max_length=10)
+    birthDate=models.DateField(max_length=15,verbose_name="Birth date")
+    termOfEmployment=models.DateField(max_length=10,verbose_name="Term of Employment")
     role=models.CharField(max_length=10)
     level=models.CharField(max_length=10)
     country=models.CharField(max_length=20,blank=True,)
     region=models.CharField(max_length=25)
     city=models.CharField(max_length=10)
-    # department=models.ForeignKey(DepartmentModel,on_delete=models.CASCADE,to_field='departmentId')
+    department=models.ForeignKey("DepartmentModel", verbose_name="Department" , to_field="departmentId",on_delete=models.CASCADE)
 
   
     def __str__(self):
         return self.firstName
 
+class RoleModel(models.Model): 
+    roleId = models.AutoField(primary_key=True,auto_created=True) 
+    role=models.CharField(max_length=20,blank=True)
+    department=models.ForeignKey("DepartmentModel", verbose_name="Department" , to_field="departmentId",on_delete=models.CASCADE)
+    
+    def __str__(self):
+       return self.role
+       
+class claimModel(models.Model): 
+    levelId = models.AutoField(primary_key=True,auto_created=True) 
+    level=models.CharField(max_length=20,blank=True)
+    role=models.ForeignKey("RoleModel", verbose_name="Role" , to_field="roleId",on_delete=models.CASCADE)
+    
+    def __str__(self):
+       return self.role
 
 class AccountModel(models.Model): 
-    accountId = models.AutoField(primary_key=True,unique=True) 
-    userName=models.CharField(max_length=20,blank=True)
-    password=models.DateField(max_length=25)
-    # employe=models.OneToOneField(EmployeModel,  on_delete=models.CASCADE,to_field='employeId')
-    
+    accountId = models.AutoField(primary_key=True,auto_created=True) 
+    userName=models.CharField(max_length=20,blank=True,verbose_name="User name")
+    password=models.CharField(max_length=25)
+
     def __str__(self):
        return self.userName
 
+
+
+class OrderModel(models.Model): 
+    orderId = models.AutoField(primary_key=True,auto_created=True) 
+    orderNumber=models.IntegerField(verbose_name="Order number")
+    quantity=models.IntegerField()
+    description=models.CharField(max_length=50)
+    orderDate=models.DateField(max_length=20)
+    discount=models.FloatField(null=False)
+    item= models.ForeignKey("ItemModel", verbose_name="Item" , to_field="itemId",on_delete=models.CASCADE)
+    def __str__(self):
+     return self.orderName 
+
+"""Item model which have many to many realtion with Order model and many to one with catagory model"""
+
+class ItemModel(models.Model): 
+    itemId = models.AutoField(primary_key=True,auto_created=True) 
+    itemName=models.CharField(max_length=20,blank=True)
+    quantity=models.IntegerField(null=False)
+    retailPrice=models.FloatField(null=False)
+    packaging=models.CharField(max_length=20)
+    catagory= models.ForeignKey("CatagoryModel", verbose_name="Catagory" , to_field="catagoryId",on_delete=models.CASCADE)
+
+    
+    def __str__(self):
+     return self.itemName    
+
+""" Catagory model related to Item"""
+class CatagoryModel(models.Model): 
+    catagoryId=models.AutoField(primary_key=True,unique=True) 
+    catagory = models.CharField(auto_created=True,max_length=20) 
+    subCatagory = models.CharField(auto_created=True,max_length=20) 
+
+    
+    def __str__(self):
+     return self.catagory  
+
+
+"""Status model realted to Order, employe models"""
+class StatusModel(models.Model): 
+    orderId = models.AutoField(primary_key=True,auto_created=True) 
+    orderName=models.CharField(max_length=20,verbose_name="Order name")
+    location=models.CharField(max_length=50)
+    date=models.DateField(max_length=20)
+    
+    def __str__(self):
+     return self.orderName  
+
+"""ShipmentStatus table realted to siv and order"""
+class ShipmentStatusModel(models.Model): 
+    shipmentId = models.AutoField(primary_key=True,auto_created=True) 
+    orderName=models.CharField(max_length=20,verbose_name="Order name")
+    location=models.CharField(max_length=50)
+    date=models.DateField(max_length=20)
+    
+    def __str__(self):
+     return self.orderName 
+
+"""invoice table related to Order and Employe tables"""
+class InvoiceModel(models.Model): 
+    invoiceId = models.AutoField(primary_key=True,auto_created=True) 
+    quantity = models.IntegerField()
+    invoiceNo = models.IntegerField(verbose_name="Invoice number")
+    ItemId = models.IntegerField()
+    subTotal =models.FloatField(verbose_name="Sub total")
+    Total =models.FloatField()
+    Tax =models.FloatField()
+    retailPrice =models.IntegerField()
+    date=models.DateField(max_length=20)
+    
+    def __str__(self):
+     return self.invoiceNo 
+
+"""siv models which is related to Order model"""
+class sivModel(models.Model): 
+    sivId = models.AutoField(primary_key=True,auto_created=True) 
+    sivDate= models.DateField()
+    
+    def __str__(self):
+     return self.sivId 
+
+"""shipment model eralted to employe model"""
+class ShipmentModel(models.Model): 
+    shipmentId = models.AutoField(primary_key=True,auto_created=True) 
+    quantity= models.FloatField()
+    receivedStatus= models.CharField(max_length=30,verbose_name="Recieved Status")
+    conditionOnTrack= models.CharField(max_length=30,verbose_name="Condition on truack")
+    receivedBy= models.CharField(max_length=20,verbose_name="Recieved By")
+    dateOnTrack= models.DateField(verbose_name="Date on truck")
+    arrivalDate= models.DateField(verbose_name="Arrival date")
+    departureDate= models.DateField()
+    
+    def __str__(self):
+     return self.shipmentId 
+     
+"""comapny model reated to employe and order models"""    
+class companyModel(models.Model): 
+    companyId = models.AutoField(primary_key=True,auto_created=True) 
+    quantity= models.FloatField()
+    companyName= models.CharField(max_length=30,verbose_name="Company name")
+    generalManger= models.CharField(max_length=30,verbose_name="General manager")
+    contactPerson= models.CharField(max_length=20,verbose_name="Contact person")
+    workingField= models.CharField(max_length=20,verbose_name="Working Field")
+    paymentOption= models.CharField(max_length=20,verbose_name="Payment option")
+    email = models.EmailField(max_length = 30)
+    tinNumber= models.IntegerField(verbose_name="Tin number")
+    
+    def __str__(self):
+     return self.companyName 
+         
