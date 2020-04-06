@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import generics
-from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel
@@ -12,50 +11,28 @@ from utilities.token import get_token,get_role
 
 
 
-class EmployeApiView(generics.RetrieveUpdateDestroyAPIView):
+class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=EmployeSerializer
     queryset= EmployeModel.objects.all()
     lookup_field='employeId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
-    
-    def get(self,request,employeId=None): 
-     #   token = get_token(request)
-     #   print(get_role(token))
-         if employeId:
-            return self.retrieve(request,employeId)
-         else:
-            return self.list(request)
 
-    # def post(self,request,employeId=None):
-    #     return self.create(request)
+    def get(self,request,employeId=None): 
+         # token = get_token(request)
+        return self.retrieve(request,employeId)
 
     def put(self,request,employeId=None):
+         # token = get_token(request)
          return self.update(request,employeId) 
 
     def delete(self,request,employeId=None):
+         # token = get_token(request)
          return self.destroy(request,employeId)  
 
-class EmployePostApiView(generics.ListCreateAPIView):
-    serializer_class=EmployeSerializer
-    queryset= EmployeModel.objects.all()
-    lookup_field='employeId'
-    # authentication_classes=[TokenAuthentication]
-    # permission_classes=[IsAuthenticated]
+
     
-    def get(self,request,employeId=None): 
-     #   token = get_token(request)
-     #   print(get_role(token))
-        return self.list(request)
-
-    def post(self,request,employeId=None):
-        return self.create(request)
-
-
-  
-class AccountApiView(generics.GenericAPIView,
-mixins.ListModelMixin,mixins.CreateModelMixin,
-mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+class AccountRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=AccountSerializer
     queryset= AccountModel.objects.all()
     lookup_field='accountId'
@@ -64,25 +41,17 @@ mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
     
     def get(self,request,accountId=None): 
      #   token = get_token(request)
-     #   print(get_role(token))
-        if accountId:
-           return self.retrieve(accountId)
-        else:
-              return self.list(request)
-
-    def post(self,request):
-        return self.create(request)
+        return self.retrieve(request,accountId)
 
     def put(self,request,accountId=None):
+         #token = get_token(request)
          return self.update(request,accountId) 
 
     def delete(self,request,accountId=None):
+        #  token = get_token(request)
          return self.destroy(request,accountId)   
    
-  
-class DepartmentApiView(generics.GenericAPIView,
-mixins.ListModelMixin,mixins.CreateModelMixin,
-mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=DepartmentSerializer
     queryset= DepartmentModel.objects.all()
     lookup_field='departmentId'
@@ -90,27 +59,20 @@ mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,departmentId=None): 
-     #   token = get_token(request)
-     #   print(get_role(token))
-        if id:
-            return self.retrieve(departmentId)
-        else:
-              return self.list(request)
-
-    def post(self,request):
-        return self.create(request)
-
+         #token = get_token(request)
+         return self.retrieve(request,departmentId)
+  
     def put(self,request,departmentId=None):
+         #token = get_token(request)
          return self.update(request,departmentId) 
 
     def delete(self,request,departmentId=None):
-         return self.destroy(request,departmentId)   
-   
+         #token = get_token(request)
+         return self.destroy(request,departmentId)  
   
 
-class RoleApiView(generics.GenericAPIView,
-mixins.ListModelMixin,mixins.CreateModelMixin,
-mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+
+class RoleRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=RoleSerializer
     queryset= RoleModel.objects.all()
     lookup_field='roleId'
@@ -119,24 +81,18 @@ mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
     
     def get(self,request,roleId=None): 
      #   token = get_token(request)
-     #   print(get_role(token))
-        if roleId:
-            return self.retrieve(request,roleId)
-        else:
-              return self.list(request)
-
-    def post(self,request):
-        return self.create(request)
+        return self.retrieve(request,roleId)
 
     def put(self,request,roleId=None):
-         return self.update(request,roleId) 
+        #token = get_token(request)
+        return self.update(request,roleId) 
 
-    def delete(self,request,id=None):
-         return self.destroy(request,roleId)   
-   
-class LevelApiView(generics.GenericAPIView,
-mixins.ListModelMixin,mixins.CreateModelMixin,
-mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+    def delete(self,request,roleId=None):
+        #token = get_token(request)
+        return self.destroy(request,roleId) 
+
+
+class LevelRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=ClaimSerializer
     queryset= claimModel.objects.all()
     lookup_field='levelId'
@@ -145,26 +101,19 @@ mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
     
     def get(self,request,levelId=None): 
      #   token = get_token(request)
-     #   print(get_role(token))
-        if levelId:
-            return self.retrieve(request,levelId)
-        else:
-              return self.list(request)
-
-    def post(self,request):
-        return self.create(request)
+        return self.retrieve(request,levelId)
 
     def put(self,request,levelId=None):
+        #token = get_token(request)
          return self.update(request,levelId) 
 
     def delete(self,request,levelId=None):
+        #token = get_token(request)
          return self.destroy(request,levelId)   
    
   
 
-class ItemApiView(generics.GenericAPIView,
-mixins.ListModelMixin,mixins.CreateModelMixin,
-mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=ItemSerializer
     queryset= ItemModel.objects.all()
     lookup_field='ItemId'
@@ -173,24 +122,17 @@ mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
     
     def get(self,request,ItemId=None): 
      #   token = get_token(request)
-     #   print(get_role(token))
-        if ItemId:
-            return self.retrieve(request,ItemId)
-        else:
-              return self.list(request)
-
-    def post(self,request):
-        return self.create(request)
-
+        return self.retrieve(request,ItemId)
+     
     def put(self,request,ItemId=None):
-         return self.update(request,ItemId) 
+        #token = get_token(request)
+        return self.update(request,ItemId) 
 
     def delete(self,request,ItemId=None):
-         return self.destroy(request,ItemId)   
+        #   token = get_token(request)
+        return self.destroy(request,ItemId)   
    
-class CatagoryApiView(generics.GenericAPIView,
-mixins.ListModelMixin,mixins.CreateModelMixin,
-mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+class CatagoryRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=CatagorySerializer
     queryset= CatagoryModel.objects.all()
     lookup_field='catagoryId'
@@ -199,24 +141,17 @@ mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
     
     def get(self,request,catagoryId=None): 
      #   token = get_token(request)
-     #   print(get_role(token))
-        if catagoryId:
-            return self.retrieve(request,catagoryId)
-        else:
-              return self.list(request)
-
-    def post(self,request):
-        return self.create(request)
-
+        return self.retrieve(request,catagoryId)
+    
     def put(self,request,catagoryId=None):
+        #token = get_token(request)
          return self.update(request,catagoryId) 
 
     def delete(self,request,catagoryId=None):
+         #token = get_token(request)
          return self.destroy(request,catagoryId)   
 
-class OrderApiView(generics.GenericAPIView,
-mixins.ListModelMixin,mixins.CreateModelMixin,
-mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=OrderSerializer
     queryset= OrderModel.objects.all()
     lookup_field='orderId'
@@ -225,19 +160,14 @@ mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
     
     def get(self,request,orderId=None): 
      #   token = get_token(request)
-     #   print(get_role(token))
-        if orderId:
-            return self.retrieve(request,orderId)
-        else:
-              return self.list(request)
-
-    def post(self,request):
-        return self.create(request)
-
+        return self.retrieve(request,orderId)
+      
     def put(self,request,orderId=None):
+        #   token = get_token(request)
          return self.update(request,orderId) 
 
     def delete(self,request,orderId=None):
+        #   token = get_token(request)
          return self.destroy(request,orderId)   
 
 
