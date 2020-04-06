@@ -17,17 +17,18 @@ class EmployeModel(models.Model):
     hiredDate=models.DateField(max_length=15,verbose_name="Hired date")
     telephone=models.CharField(max_length=15)
     birthDate=models.DateField(max_length=15,verbose_name="Birth date")
-    termOfEmployment=models.DateField(max_length=10,verbose_name="Term of Employment")
-    role=models.CharField(max_length=10)
-    level=models.CharField(max_length=10)
-    country=models.CharField(max_length=20,blank=True,)
-    region=models.CharField(max_length=25)
-    city=models.CharField(max_length=10)
+    
     department=models.ForeignKey("DepartmentModel", verbose_name="Department" , to_field="departmentId",on_delete=models.CASCADE)
+    role=models.ForeignKey("RoleModel", verbose_name="Role" , to_field="roleId",on_delete=models.CASCADE)
+    level=models.ForeignKey("claimModel", verbose_name="Level" , to_field="levelId",on_delete=models.CASCADE)
 
+    termOfEmployment=models.DateField(max_length=10,verbose_name="Term of Employment")
+    country=models.CharField(max_length=20)
+    region=models.CharField(max_length=25)
+    city=models.CharField(max_length=20)
   
     def __str__(self):
-        return self.firstName
+        return self.firstName 
 
 class RoleModel(models.Model): 
     roleId = models.AutoField(primary_key=True,auto_created=True) 
@@ -35,7 +36,7 @@ class RoleModel(models.Model):
     department=models.ForeignKey("DepartmentModel", verbose_name="Department" , to_field="departmentId",on_delete=models.CASCADE)
     
     def __str__(self):
-       return self.role
+       return str(self.department)
        
 class claimModel(models.Model): 
     levelId = models.AutoField(primary_key=True,auto_created=True) 
@@ -43,7 +44,7 @@ class claimModel(models.Model):
     role=models.ForeignKey("RoleModel", verbose_name="Role" , to_field="roleId",on_delete=models.CASCADE)
     
     def __str__(self):
-       return self.role
+       return str(self.role)
 
 class AccountModel(models.Model): 
     accountId = models.AutoField(primary_key=True,auto_created=True) 
