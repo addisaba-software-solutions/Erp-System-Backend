@@ -1,14 +1,6 @@
 from django.db import models
 
 
-class DepartmentModel(models.Model): 
-    departmentId = models.AutoField(primary_key=True,unique=True) 
-    departmentName=models.CharField(max_length=20,blank=True,verbose_name="Department Name")
-
-    def __str__(self):
-       return self.departmentName
-
-       
 class EmployeModel(models.Model): 
     employeId = models.AutoField(primary_key=True,unique=True ) 
     firstName=models.CharField(max_length=15,verbose_name="First name")
@@ -30,13 +22,20 @@ class EmployeModel(models.Model):
     def __str__(self):
         return self.firstName 
 
+class DepartmentModel(models.Model): 
+    departmentId = models.AutoField(primary_key=True,unique=True) 
+    departmentName=models.CharField(max_length=20,blank=True,verbose_name="Department Name")
+
+    def __str__(self):
+        return self.departmentName        
+
 class RoleModel(models.Model): 
     roleId = models.AutoField(primary_key=True,auto_created=True) 
     role=models.CharField(max_length=20,blank=True)
     department=models.ForeignKey("DepartmentModel", verbose_name="Department" , to_field="departmentId",on_delete=models.CASCADE)
     
     def __str__(self):
-       return str(self.department)
+        return str(self.department)
        
 class claimModel(models.Model): 
     levelId = models.AutoField(primary_key=True,auto_created=True) 
@@ -44,7 +43,7 @@ class claimModel(models.Model):
     role=models.ForeignKey("RoleModel", verbose_name="Role" , to_field="roleId",on_delete=models.CASCADE)
     
     def __str__(self):
-       return str(self.role)
+        return str(self.role)
 
 class AccountModel(models.Model): 
     accountId = models.AutoField(primary_key=True,auto_created=True) 
@@ -53,8 +52,6 @@ class AccountModel(models.Model):
 
     def __str__(self):
        return self.userName
-
-
 
 class OrderModel(models.Model): 
     orderId = models.AutoField(primary_key=True,auto_created=True) 
@@ -68,7 +65,6 @@ class OrderModel(models.Model):
      return self.orderName 
 
 """Item model which have many to many realtion with Order model and many to one with catagory model"""
-
 class ItemModel(models.Model): 
     itemId = models.AutoField(primary_key=True,auto_created=True) 
     itemName=models.CharField(max_length=20,blank=True)
@@ -77,9 +73,8 @@ class ItemModel(models.Model):
     packaging=models.CharField(max_length=20)
     catagory= models.ForeignKey("CatagoryModel", verbose_name="Catagory" , to_field="catagoryId",on_delete=models.CASCADE)
 
-    
     def __str__(self):
-     return self.itemName    
+        return self.itemName    
 
 """ Catagory model related to Item"""
 class CatagoryModel(models.Model): 
@@ -87,10 +82,8 @@ class CatagoryModel(models.Model):
     catagory = models.CharField(auto_created=True,max_length=20) 
     subCatagory = models.CharField(auto_created=True,max_length=20) 
 
-    
     def __str__(self):
-     return self.catagory  
-
+        return self.catagory  
 
 """Status model realted to Order, employe models"""
 class StatusModel(models.Model): 
@@ -100,7 +93,7 @@ class StatusModel(models.Model):
     date=models.DateField(max_length=20)
     
     def __str__(self):
-     return self.orderName  
+        return self.orderName  
 
 """ShipmentStatus table realted to siv and order"""
 class ShipmentStatusModel(models.Model): 
@@ -110,7 +103,7 @@ class ShipmentStatusModel(models.Model):
     date=models.DateField(max_length=20)
     
     def __str__(self):
-     return self.orderName 
+        return self.orderName 
 
 """invoice table related to Order and Employe tables"""
 class InvoiceModel(models.Model): 
@@ -125,7 +118,7 @@ class InvoiceModel(models.Model):
     date=models.DateField(max_length=20)
     
     def __str__(self):
-     return self.invoiceNo 
+        return self.invoiceNo 
 
 """siv models which is related to Order model"""
 class sivModel(models.Model): 
@@ -133,7 +126,7 @@ class sivModel(models.Model):
     sivDate= models.DateField()
     
     def __str__(self):
-     return self.sivId 
+        return self.sivId 
 
 """shipment model eralted to employe model"""
 class ShipmentModel(models.Model): 
@@ -147,11 +140,8 @@ class ShipmentModel(models.Model):
     departureDate= models.DateField()
     
     def __str__(self):
-     return self.shipmentId 
+        return self.shipmentId 
      
-
-
-    
 """comapny model reated to employe and order models"""    
 class CompanyModel(models.Model): 
     companyId = models.AutoField(primary_key=True,auto_created=True) 
@@ -164,5 +154,5 @@ class CompanyModel(models.Model):
     tinNumber= models.IntegerField(verbose_name="Tin number")
     
     def __str__(self):
-     return self.companyName 
+        return self.companyName 
          

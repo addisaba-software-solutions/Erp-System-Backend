@@ -19,18 +19,18 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self,request,employeId=None): 
-         # token = get_token(request)
+        # token = get_token(request)
         return self.retrieve(request,employeId)
 
     def put(self,request,employeId=None):
-         # token = get_token(request)
-         return self.update(request,employeId) 
+        # token = get_token(request)
+        return self.update(request,employeId) 
 
     def delete(self,request,employeId=None):
-         # token = get_token(request)
-         return self.destroy(request,employeId)  
+        # token = get_token(request)
+        return self.destroy(request,employeId)  
 
-class ListAddEmploye(generics.ListCreateAPIView):
+class EmployeListAdd(generics.ListCreateAPIView):
     serializer_class=EmployeSerializer
     queryset= EmployeModel.objects.all()
     lookup_field='employeId'
@@ -44,8 +44,6 @@ class ListAddEmploye(generics.ListCreateAPIView):
     def post(self,request):
         # token = get_token(request)
         return self.create(request)
-
-
     
 class AccountRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=AccountSerializer
@@ -55,17 +53,32 @@ class AccountRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,accountId=None): 
-     #   token = get_token(request)
+        # token = get_token(request)
         return self.retrieve(request,accountId)
 
     def put(self,request,accountId=None):
-         #token = get_token(request)
-         return self.update(request,accountId) 
+        # token = get_token(request)
+        return self.update(request,accountId) 
 
     def delete(self,request,accountId=None):
-        #  token = get_token(request)
-         return self.destroy(request,accountId)   
-   
+        # token = get_token(request)
+        return self.destroy(request,accountId) 
+
+class AccountListAdd(generics.ListCreateAPIView):
+    serializer_class=EmployeSerializer
+    queryset= EmployeModel.objects.all()
+    lookup_field='accountId'
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+    
+    def get(self,request): 
+        # token = get_token(request)
+        return self.list(request)
+
+    def post(self,request):
+        # token = get_token(request)
+        return self.create(request)
+
 class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=DepartmentSerializer
     queryset= DepartmentModel.objects.all()
@@ -74,14 +87,17 @@ class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,departmentId=None): 
-         #token = get_token(request)
-         return self.retrieve(request,departmentId)
+        # token = get_token(request)
+        return self.retrieve(request,departmentId)
   
     def put(self,request,departmentId=None):
-         #token = get_token(request)
-         return self.update(request,departmentId) 
+        # token = get_token(request)
+        return self.update(request,departmentId) 
 
     def delete(self,request,departmentId=None):
+        # token = get_token(request)
+        return self.destory(request,departmentId)
+
 class DepartmentListAdd(generics.ListCreateAPIView):
     serializer_class=DepartmentSerializer
     queryset= DepartmentModel.objects.all()
@@ -96,9 +112,6 @@ class DepartmentListAdd(generics.ListCreateAPIView):
     def post(self,request):
         # token = get_token(request)
         return self.create(request)
- 
-   
-         #token = get_token(request)
   
 class RoleRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=RoleSerializer
@@ -107,15 +120,16 @@ class RoleRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,roleId=None): 
-     #   token = get_token(request)
+        # token = get_token(request)
         return self.retrieve(request,roleId)
 
     def put(self,request,roleId=None):
-        #token = get_token(request)
+        # token = get_token(request)
         return self.update(request,roleId) 
 
     def delete(self,request,id=None):
-         return self.destroy(request,roleId) 
+        # token = get_token(request)
+        return self.destroy(request,roleId) 
 
 class RoleListAdd(generics.ListCreateAPIView):
     serializer_class=RoleSerializer
@@ -132,7 +146,6 @@ class RoleListAdd(generics.ListCreateAPIView):
         # token = get_token(request)
         return self.create(request)
 
-
 class LevelRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=ClaimSerializer
     queryset= claimModel.objects.all()
@@ -141,15 +154,16 @@ class LevelRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,levelId=None): 
-     #   token = get_token(request)
+        # token = get_token(request)
         return self.retrieve(request,levelId)
 
     def put(self,request,levelId=None):
-        #token = get_token(request)
-         return self.update(request,levelId) 
+        # token = get_token(request)
+        return self.update(request,levelId) 
 
     def delete(self,request,levelId=None):
-         return self.destroy(request,levelId)  
+        # token = get_token(request)
+        return self.destroy(request,levelId)  
 
 class LevelListAdd(generics.ListCreateAPIView):
     serializer_class=ClaimSerializer
@@ -166,11 +180,6 @@ class LevelListAdd(generics.ListCreateAPIView):
         # token = get_token(request)
         return self.create(request)
  
-        #token = get_token(request)
-         return self.destroy(request,levelId)   
-   
-  
-
 class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=ItemSerializer
     queryset= ItemModel.objects.all()
@@ -179,15 +188,16 @@ class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,ItemId=None): 
-     #   token = get_token(request)
+        # token = get_token(request)
         return self.retrieve(request,ItemId)
      
     def put(self,request,ItemId=None):
-        #token = get_token(request)
+        # token = get_token(request)
         return self.update(request,ItemId) 
 
     def delete(self,request,ItemId=None):
-         return self.destroy(request,ItemId) 
+        # token = get_token(request)
+        return self.destroy(request,ItemId) 
 
 class ItemListAdd(generics.ListCreateAPIView):
     serializer_class=ItemSerializer
@@ -202,12 +212,7 @@ class ItemListAdd(generics.ListCreateAPIView):
 
     def post(self,request):
         # token = get_token(request)
-        return self.create(request)
-
-
-  
-        #   token = get_token(request)
-        return self.destroy(request,ItemId)   
+        return self.create(request) 
    
 class CatagoryRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=CatagorySerializer
@@ -217,15 +222,16 @@ class CatagoryRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,catagoryId=None): 
-     #   token = get_token(request)
+        # token = get_token(request)
         return self.retrieve(request,catagoryId)
     
     def put(self,request,catagoryId=None):
-        #token = get_token(request)
-         return self.update(request,catagoryId) 
+        # token = get_token(request)
+        return self.update(request,catagoryId) 
 
     def delete(self,request,catagoryId=None):
-         return self.destroy(request,catagoryId)  
+        # token = get_token(request)
+        return self.destroy(request,catagoryId)  
 
 class CatagoryListAdd(generics.ListCreateAPIView):
     serializer_class=CatagorySerializer
@@ -240,10 +246,7 @@ class CatagoryListAdd(generics.ListCreateAPIView):
 
     def post(self,request):
         # token = get_token(request)
-        return self.create(request)
- 
-         #token = get_token(request)
-         return self.destroy(request,catagoryId)   
+        return self.create(request)  
 
 class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=OrderSerializer
@@ -253,14 +256,16 @@ class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,orderId=None): 
-     #   token = get_token(request)
+        # token = get_token(request)
         return self.retrieve(request,orderId)
       
     def put(self,request,orderId=None):
-        #   token = get_token(request)
-         return self.update(request,orderId) 
+        # token = get_token(request)
+        return self.update(request,orderId) 
+
     def delete(self,request,orderId=None):
-         return self.destroy(request,orderId)   
+        # token = get_token(request)
+        return self.destroy(request,orderId)   
 
 class OrderListAdd(generics.ListCreateAPIView):
     serializer_class=OrderSerializer
@@ -285,18 +290,20 @@ class CompanyRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
     
     def get(self,request,companyId=None): 
-     #   token = get_token(request)
-         return self.retrieve(request,companyId)
+        # token = get_token(request)
+        return self.retrieve(request,companyId)
 
     def put(self,request,id=None):
-         return self.update(request,companyId) 
+        # token = get_token(request)
+        return self.update(request,companyId) 
 
     def delete(self,request,id=None):
-         return self.destroy(request,companyId)  
+        # token = get_token(request)
+        return self.destroy(request,companyId)  
 
 class CompanyListAdd(generics.ListCreateAPIView):
     serializer_class=CompanySerializer
-    queryset= companyModel.objects.all()
+    queryset= CompanyModel.objects.all()
     lookup_field='companyId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]

@@ -1,7 +1,5 @@
 from django.urls import path,include
-from .views import EmployeRUD,AccountRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD
-                    EmployeListAdd, AccountListAdd, DepartmentListAdd, RoleListAdd, LevelListAdd, ItemListAdd, CatagoryListAdd, OrderListAdd
-                    CompanyListAdd
+from .views import EmployeRUD,AccountRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD,EmployeListAdd, AccountListAdd, DepartmentListAdd, RoleListAdd, LevelListAdd, ItemListAdd, CatagoryListAdd, OrderListAdd,CompanyListAdd
 
 urlpatterns = [
     path('api/v1/employe/<int:employeId>/', EmployeRUD.as_view()),
