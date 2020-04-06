@@ -153,7 +153,7 @@ class ShipmentModel(models.Model):
 
     
 """comapny model reated to employe and order models"""    
-class companyModel(models.Model): 
+class CompanyModel(models.Model): 
     companyId = models.AutoField(primary_key=True,auto_created=True) 
     companyName= models.CharField(max_length=30,verbose_name="Company name")
     generalManger= models.CharField(max_length=30,verbose_name="General manager")

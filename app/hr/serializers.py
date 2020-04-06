@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel,companyModel
+from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel,CompanyModel
 
 class EmployeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,5 +42,5 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
-        model=companyModel
+        model=CompanyModel
         fields = '__all__'  
