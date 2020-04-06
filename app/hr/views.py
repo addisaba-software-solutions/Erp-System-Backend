@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, companyModel
+from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, CompanyModel
 from .serializers import EmployeSerializer,AccountSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
@@ -339,7 +339,7 @@ class OrderListAdd(generics.ListCreateAPIView):
 
 class CompanyRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=CompanySerializer
-    queryset= companyModel.objects.all()
+    queryset= CompanyModel.objects.all()
     lookup_field='companyId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
