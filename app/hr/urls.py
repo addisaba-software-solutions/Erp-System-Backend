@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import EmployeApiView,AccountApiView,DepartmentApiView,RoleApiView,LevelApiView,OrderApiView,CatagoryApiView,ItemApiView
+from .views import EmployeApiView,AccountApiView,DepartmentApiView,RoleApiView,LevelApiView,OrderApiView,CatagoryApiView,ItemApiView, CompanyApiView
 
 urlpatterns = [
     path('emp/', EmployeApiView.as_view()),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('item/', ItemApiView.as_view()),
     path('catagory/', CatagoryApiView.as_view()),
     path('order/', OrderApiView.as_view()),
+    path('company/', CompanyApiView.as_view()),
 ]

@@ -4,8 +4,8 @@ from rest_framework import generics
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel
-from .serializers import EmployeSerializer,AccountSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer
+from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, companyModel
+from .serializers import EmployeSerializer,AccountSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from utilities.token import get_token,get_role
@@ -224,7 +224,34 @@ mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
          return self.update(request,id) 
 
     def delete(self,request,id=None):
-         return self.destroy(request,id)   
+         return self.destroy(request,id) 
+
+
+class CompanyApiView(generics.GenericAPIView,
+mixins.ListModelMixin,mixins.CreateModelMixin,
+mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+    serializer_class=CompanySerializer
+    queryset= companyModel.objects.all()
+    lookup_field='companyId'
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+    
+    def get(self,request,id=None): 
+     #   token = get_token(request)
+     #   print(get_role(token))
+        if id:
+            return self.list(request,id)
+        else:
+              return self.list(request)
+
+    def post(self,request):
+        return self.create(request)
+
+    def put(self,request,id=None):
+         return self.update(request,id) 
+
+    def delete(self,request,id=None):
+         return self.destroy(request,id)            
 
 
 
