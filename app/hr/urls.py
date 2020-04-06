@@ -1,12 +1,9 @@
 from django.urls import path,include
-from .views import EmployeRUD,AccountRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD,EmployeListAdd, AccountListAdd, DepartmentListAdd, RoleListAdd, LevelListAdd, ItemListAdd, CatagoryListAdd, OrderListAdd,CompanyListAdd
+from .views import EmployeRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD,EmployeListAdd, DepartmentListAdd, RoleListAdd, LevelListAdd, ItemListAdd, CatagoryListAdd, OrderListAdd,CompanyListAdd
 
 urlpatterns = [
     path('api/v1/employe/<int:employeId>/', EmployeRUD.as_view()),
     path('api/v1/employe/', EmployeListAdd.as_view()),
-
-    path('api/v1/account/<int:accountId>/', AccountRUD.as_view()),
-    path('api/v1/account/', AccountListAdd.as_view()),
 
     path('api/v1/department/<int:departmentId>/', DepartmentRUD.as_view()),
     path('api/v1/department/', DepartmentListAdd.as_view()),
