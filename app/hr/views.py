@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel
-from .serializers import EmployeSerializer,AccountSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer
+from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, companyModel
+from .serializers import EmployeSerializer,AccountSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from utilities.token import get_token,get_role
@@ -165,11 +165,31 @@ class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
     def put(self,request,orderId=None):
         #   token = get_token(request)
          return self.update(request,orderId) 
-
     def delete(self,request,orderId=None):
         #   token = get_token(request)
          return self.destroy(request,orderId)   
 
+class CompanyRUD(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class=CompanySerializer
+    queryset= companyModel.objects.all()
+    lookup_field='companyId'
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+    
+    def get(self,request,companyId=None): 
+     #   token = get_token(request)
+         return self.retrieve(request,companyId)
+    
+
+    def post(self,request):
+        return self.create(request)
+
+    def put(self,request,id=None):
+         return self.update(request,id) 
+
+    def delete(self,request,id=None):
+         return self.destroy(request,id)            
+ 
 
 
     

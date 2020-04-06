@@ -149,10 +149,12 @@ class ShipmentModel(models.Model):
     def __str__(self):
      return self.shipmentId 
      
+
+
+    
 """comapny model reated to employe and order models"""    
 class companyModel(models.Model): 
     companyId = models.AutoField(primary_key=True,auto_created=True) 
-    quantity= models.FloatField()
     companyName= models.CharField(max_length=30,verbose_name="Company name")
     generalManger= models.CharField(max_length=30,verbose_name="General manager")
     contactPerson= models.CharField(max_length=20,verbose_name="Contact person")

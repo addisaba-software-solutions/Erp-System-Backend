@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import EmployeRUD,AccountRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD
+from .views import EmployeRUD,AccountRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD
 
 urlpatterns = [
     path('api/v1/employe/<int:employeId>/', EmployeRUD.as_view()),
@@ -17,4 +17,6 @@ urlpatterns = [
     path('api/v1/catagory/<int:catagoryId>/', CatagoryRUD.as_view()),
 
     path('api/v1/order/<int:orderId>/', OrderRUD.as_view()),
+    
+    path('api/v1/company/<int:companyId>/', CompanyRUD.as_view()),
 ]
