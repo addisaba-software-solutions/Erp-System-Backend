@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'hr',
     'drf_yasg',
+    'manage_auth',
 ]
 
 MIDDLEWARE = [
@@ -112,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

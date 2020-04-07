@@ -1,4 +1,5 @@
 from django.urls import path,include
+<<<<<<< HEAD
 from .views import EmployeRUD,AccountRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD,EmployeListAdd, AccountListAdd, DepartmentListAdd, RoleListAdd, LevelListAdd, ItemListAdd, CatagoryListAdd, OrderListAdd,CompanyListAdd
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -15,6 +16,9 @@ schema_view = get_schema_view(
    public=True,
 #    permission_classes=(permissions.AllowAny,),
 )
+=======
+from .views import EmployeRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD,EmployeListAdd, DepartmentListAdd, RoleListAdd, LevelListAdd, ItemListAdd, CatagoryListAdd, OrderListAdd,CompanyListAdd
+>>>>>>> 053228b07ca19b618870e20cb73c859e644cff15
 
 urlpatterns = [
 
@@ -23,9 +27,6 @@ urlpatterns = [
 
     path('api/v1/employe/<int:employeId>/', EmployeRUD.as_view()),
     path('api/v1/employe/', EmployeListAdd.as_view()),
-
-    path('api/v1/account/<int:accountId>/', AccountRUD.as_view()),
-    path('api/v1/account/', AccountListAdd.as_view()),
 
     path('api/v1/department/<int:departmentId>/', DepartmentRUD.as_view()),
     path('api/v1/department/', DepartmentListAdd.as_view()),

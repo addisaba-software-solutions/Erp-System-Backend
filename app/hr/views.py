@@ -1,12 +1,8 @@
-from django.shortcuts import render
-from django.http import HttpResponse
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authentication import TokenAuthentication
-from .models import EmployeModel,AccountModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, CompanyModel
-from .serializers import EmployeSerializer,AccountSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer
+from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, CompanyModel
+from .serializers import EmployeSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer
 from rest_framework.views import APIView
-from rest_framework.authtoken.models import Token
 from utilities.token import get_token,get_role
 
 
@@ -45,40 +41,6 @@ class EmployeListAdd(generics.ListCreateAPIView):
         # token = get_token(request)
         return self.create(request)
     
-class AccountRUD(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class=AccountSerializer
-    queryset= AccountModel.objects.all()
-    lookup_field='accountId'
-    # authentication_classes=[TokenAuthentication]
-    # permission_classes=[IsAuthenticated]
-    
-    def get(self,request,accountId=None): 
-        # token = get_token(request)
-        return self.retrieve(request,accountId)
-
-    def put(self,request,accountId=None):
-        # token = get_token(request)
-        return self.update(request,accountId) 
-
-    def delete(self,request,accountId=None):
-        # token = get_token(request)
-        return self.destroy(request,accountId) 
-
-class AccountListAdd(generics.ListCreateAPIView):
-    serializer_class=EmployeSerializer
-    queryset= EmployeModel.objects.all()
-    lookup_field='accountId'
-    # authentication_classes=[TokenAuthentication]
-    # permission_classes=[IsAuthenticated]
-    
-    def get(self,request): 
-        # token = get_token(request)
-        return self.list(request)
-
-    def post(self,request):
-        # token = get_token(request)
-        return self.create(request)
-
 class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=DepartmentSerializer
     queryset= DepartmentModel.objects.all()

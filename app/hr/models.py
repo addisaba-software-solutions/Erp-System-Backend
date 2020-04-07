@@ -45,13 +45,7 @@ class claimModel(models.Model):
     def __str__(self):
         return str(self.role)
 
-class AccountModel(models.Model): 
-    accountId = models.AutoField(primary_key=True,auto_created=True) 
-    userName=models.CharField(max_length=20,blank=True,verbose_name="User name")
-    password=models.CharField(max_length=25)
 
-    def __str__(self):
-       return self.userName
 
 class OrderModel(models.Model): 
     orderId = models.AutoField(primary_key=True,auto_created=True) 
