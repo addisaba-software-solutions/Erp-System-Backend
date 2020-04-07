@@ -62,7 +62,7 @@ class OrderModel(models.Model):
     discount=models.FloatField(null=False)
     item= models.ForeignKey("ItemModel", verbose_name="Item" , to_field="itemId",on_delete=models.CASCADE)
     def __str__(self):
-     return self.orderName 
+     return self.orderNumber 
 
 """Item model which have many to many realtion with Order model and many to one with catagory model"""
 class ItemModel(models.Model): 
