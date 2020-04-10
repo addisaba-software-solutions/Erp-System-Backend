@@ -1,12 +1,11 @@
 from rest_framework import serializers
-from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel,CompanyModel
+from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel,CompanyModel,StatusModel,ShipmentScheduleModel
 
 class EmployeSerializer(serializers.ModelSerializer):
     class Meta:
         model=EmployeModel
         fields = '__all__' 
         
-
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model=DepartmentModel
@@ -40,3 +39,14 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model=CompanyModel
         fields = '__all__'  
+
+class StatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=StatusModel
+        fields = '__all__'          
+
+
+class ShipmentScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=ShipmentScheduleModel
+        fields = '__all__' 

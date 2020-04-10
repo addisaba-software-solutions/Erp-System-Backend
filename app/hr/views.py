@@ -1,9 +1,13 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, CompanyModel
-from .serializers import EmployeSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer
+from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, CompanyModel, StatusModel, ShipmentScheduleModel
+from .serializers import EmployeSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer, StatusSerializer, ShipmentScheduleSerializer
 from rest_framework.views import APIView
 from utilities.token import get_token,get_role
+from django.db.models.signals import post_save
+from rest_framework.response import Response
+from rest_framework import status
+
 
 
 
@@ -145,21 +149,21 @@ class LevelListAdd(generics.ListCreateAPIView):
 class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=ItemSerializer
     queryset= ItemModel.objects.all()
-    lookup_field='ItemId'
+    lookup_field='itemId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
     
-    def get(self,request,ItemId=None): 
+    def get(self,request,itemId=None): 
         # token = get_token(request)
-        return self.retrieve(request,ItemId)
+        return self.retrieve(request,itemId)
      
-    def put(self,request,ItemId=None):
+    def put(self,request,itemId=None):
         # token = get_token(request)
-        return self.update(request,ItemId) 
+        return self.update(request,itemId) 
 
-    def delete(self,request,ItemId=None):
+    def delete(self,request,itemId=None):
         # token = get_token(request)
-        return self.destroy(request,ItemId) 
+        return self.destroy(request,itemId) 
 
 class ItemListAdd(generics.ListCreateAPIView):
     serializer_class=ItemSerializer
@@ -242,7 +246,11 @@ class OrderListAdd(generics.ListCreateAPIView):
 
     def post(self,request):
         # token = get_token(request)
-        return self.create(request) 
+        print("orders quantity")
+        if(checkAvailability(request.data)):
+            return self.create(request)
+        else:
+            return Response("requested item amount is not available at the moment", status=status.HTTP_404_NOT_FOUND)
 
 class CompanyRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=CompanySerializer
@@ -255,11 +263,11 @@ class CompanyRUD(generics.RetrieveUpdateDestroyAPIView):
         # token = get_token(request)
         return self.retrieve(request,companyId)
 
-    def put(self,request,id=None):
+    def put(self,request,companyId=None):
         # token = get_token(request)
         return self.update(request,companyId) 
 
-    def delete(self,request,id=None):
+    def delete(self,request,companyId=None):
         # token = get_token(request)
         return self.destroy(request,companyId)  
 
@@ -277,14 +285,99 @@ class CompanyListAdd(generics.ListCreateAPIView):
     def post(self,request):
         # token = get_token(request)
         return self.create(request)
+
+
+class StatusRUD(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class=StatusSerializer
+    queryset= StatusModel.objects.all()
+    lookup_field='id'
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+    
+    def get(self,request,id=None): 
+        # token = get_token(request)
+        return self.retrieve(request,id)
+
+    def put(self,request,id=None):
+        # token = get_token(request)
+        return self.update(request,id) 
+
+    def delete(self,request,id=None):
+        # token = get_token(request)
+        return self.destroy(request,id)  
+
+class StatusListAdd(generics.ListCreateAPIView):
+    serializer_class=StatusSerializer
+    queryset= StatusModel.objects.all()
+    lookup_field='id'
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+
+    def get(self,request): 
+        # token = get_token(request)
+        return self.list(request)
+
+    def post(self,request):
+        # token = get_token(request)
+        return self.create(request)        
           
- 
 
+          
 
+class ShipmentScheduleRUD(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class=ShipmentScheduleSerializer
+    queryset= ShipmentScheduleModel.objects.all()
+    lookup_field='shipmentId'
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
     
+    def get(self,request,shipmentId=None): 
+        # token = get_token(request)
+        return self.retrieve(request,id)
 
+    def put(self,request,shipmentId=None):
+        # token = get_token(request)
+        return self.update(request,id) 
+
+    def delete(self,request,shipmentId=None):
+        # token = get_token(request)
+        return self.destroy(request,id)  
+
+class ShipmentScheduleListAdd(generics.ListCreateAPIView):
+    serializer_class=ShipmentScheduleSerializer
+    queryset= ShipmentScheduleModel.objects.all()
+    lookup_field='shipmentId'
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+
+    def get(self,request): 
+        # token = get_token(request)
+        return self.list(request)
+
+    def post(self,request):
+        # token = get_token(request)
+        return self.create(request)  
+
+
+def issue_siv(sender, instance, **kwargs):
     
+    print("say something" + str(instance.orderId))
 
 
+post_save.connect(issue_siv, sender=OrderModel)
 
+# def test(x):
+#     ItemModel.objects.filter(order=x)
+
+def checkAvailability(qty):
+    orderQuantity = qty["orderQuantity"]
+    itemQuantity = ItemModel.objects.values_list('quantity', flat=True).get(pk=qty["item"])
+    if(int(orderQuantity) <= int(itemQuantity)):
+        newItemQuantity = int(itemQuantity) - int(orderQuantity)
+        item=ItemModel.objects.get(pk=qty["item"])
+        item.quantity=str(newItemQuantity)
+        item.save()
+        return True
+    else:
+        return False   
 
