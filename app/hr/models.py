@@ -1,4 +1,8 @@
 from django.db import models
+from model_utils import Choices
+
+STATUS = Choices('Pending', 'Approved')
+PAYMENTOPTION = Choices('VAT', 'TOT')
 
 """Employee has one department and one role"""
 class EmployeModel(models.Model): 
@@ -73,7 +77,7 @@ class ItemModel(models.Model):
     discount=models.IntegerField(null=True)
 
     def __str__(self):
-        return str(self.itemName)    
+        return str(self.itemName + "(  " + str(self.quantity) + " ) ")    
 
 """Catagory has many items"""
 class CatagoryModel(models.Model): 
@@ -121,7 +125,7 @@ class CompanyModel(models.Model):
     generalManger= models.CharField(max_length=100,verbose_name="General manager")
     contactPerson= models.CharField(max_length=100,verbose_name="Contact person")
     workingField= models.CharField(max_length=100,verbose_name="Working Field")
-    paymentOption= models.CharField(max_length=100,verbose_name="Payment option")
+    paymentOption= models.CharField(max_length=100, choices= PAYMENTOPTION)
     email = models.EmailField(max_length = 100)
     tinNumber= models.IntegerField(verbose_name="Tin number")
     
@@ -154,10 +158,12 @@ class InvoiceLineItemModel(models.Model):
 """siv models which is related to Order model"""
 class sivModel(models.Model): 
     sivId = models.AutoField(primary_key=True,auto_created=True) 
-    itemId=models.IntegerField(unique=True)
+    itemId=models.IntegerField()
+    itemName=models.CharField(max_length=100)
     quantity=models.IntegerField()
     sivDate= models.DateField()
     warehouseName=models.CharField(max_length=100)
+    approve=models.CharField(max_length=100, choices=STATUS, default=STATUS.Pending)
     
     def __str__(self):
         return str(self.sivId) 

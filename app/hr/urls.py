@@ -1,5 +1,5 @@
 from django.urls import path,include
-from .views import EmployeRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD, CompanyListAdd, EmployeListAdd, DepartmentListAdd, RoleListAdd, LevelListAdd, ItemListAdd, CatagoryListAdd, OrderListAdd,StatusListAdd,StatusRUD, ShipmentScheduleListAdd, ShipmentScheduleRUD 
+from .views import EmployeRUD,DepartmentRUD,RoleRUD,LevelRUD,OrderRUD,CatagoryRUD,ItemRUD,CompanyRUD, CompanyListAdd, EmployeListAdd, DepartmentListAdd, RoleListAdd, LevelListAdd, ItemListAdd, CatagoryListAdd, OrderListAdd,StatusListAdd,StatusRUD, ShipmentScheduleListAdd, ShipmentScheduleRUD, SivListAdd, SIVRUD 
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -18,12 +18,15 @@ schema_view = get_schema_view(
 
 urlpatterns = [
 
-    path('api/v1/docs', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api/v1/doc', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('api/v1/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/v1/doc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     
 
     path('api/v1/employe/<int:employeId>/', EmployeRUD.as_view()),
     path('api/v1/employe/', EmployeListAdd.as_view()),
+
+    path('api/v1/generatesiv/<int:sivId>/', SIVRUD.as_view()),
+    path('api/v1/generatesiv/', SivListAdd.as_view()),
 
     path('api/v1/schedulestatus/<int:shipmentId>/', ShipmentScheduleRUD.as_view()),
     path('api/v1/schedulestatus/', ShipmentScheduleListAdd.as_view()),

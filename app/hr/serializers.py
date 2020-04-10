@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel,CompanyModel,StatusModel,ShipmentScheduleModel
+from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel,CompanyModel,StatusModel,ShipmentScheduleModel, sivModel
 
 class EmployeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,4 +49,9 @@ class StatusSerializer(serializers.ModelSerializer):
 class ShipmentScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model=ShipmentScheduleModel
+        fields = '__all__' 
+
+class SivSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=sivModel
         fields = '__all__' 
