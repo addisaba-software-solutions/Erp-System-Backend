@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     'hr',
     'drf_yasg',
     'manage_auth',
@@ -53,6 +54,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -88,13 +92,14 @@ DATABASES = {
     }
 }
 
-EST_FRAMEWORK = {
+REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+      'rest_framework.permissions.AllowAny',
+    #   'rest_framework.permissions.DjangoModelPermissions'
     ),
 }
 
@@ -128,6 +133,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Static files (CSS, JavaScript, Images)

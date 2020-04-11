@@ -4,6 +4,7 @@ from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,
 from .serializers import EmployeSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer
 from rest_framework.views import APIView
 from utilities.token import get_token,get_role
+from  manage_auth.permission import HrPermissionsAll
 
 
 
@@ -12,7 +13,7 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
     queryset= EmployeModel.objects.all()
     lookup_field='employeId'
     # authentication_classes=[TokenAuthentication]
-    # permission_classes=[IsAuthenticated]
+    permission_classes=[HrPermissionsAll]
 
     def get(self,request,employeId=None): 
         # token = get_token(request)
@@ -31,7 +32,7 @@ class EmployeListAdd(generics.ListCreateAPIView):
     queryset= EmployeModel.objects.all()
     lookup_field='employeId'
     # authentication_classes=[TokenAuthentication]
-    # permission_classes=[IsAuthenticated]
+    permission_classes=[HrPermissionsAll]
     
     def get(self,request): 
         # token = get_token(request)
@@ -47,6 +48,7 @@ class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
     lookup_field='departmentId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
+    permission_classes=[HrPermissionsAll]
     
     def get(self,request,departmentId=None): 
         # token = get_token(request)
@@ -64,8 +66,7 @@ class DepartmentListAdd(generics.ListCreateAPIView):
     serializer_class=DepartmentSerializer
     queryset= DepartmentModel.objects.all()
     lookup_field='departmentId'
-    # authentication_classes=[TokenAuthentication]
-    # permission_classes=[IsAuthenticated]
+    permission_classes=[HrPermissionsAll]
 
     def get(self,request): 
         # token = get_token(request)
@@ -78,8 +79,7 @@ class DepartmentListAdd(generics.ListCreateAPIView):
 class RoleRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=RoleSerializer
     lookup_field='roleId'
-    # authentication_classes=[TokenAuthentication]
-    # permission_classes=[IsAuthenticated]
+    permission_classes=[HrPermissionsAll]
     
     def get(self,request,roleId=None): 
         # token = get_token(request)
@@ -89,7 +89,7 @@ class RoleRUD(generics.RetrieveUpdateDestroyAPIView):
         # token = get_token(request)
         return self.update(request,roleId) 
 
-    def delete(self,request,id=None):
+    def delete(self,request,roleId=None):
         # token = get_token(request)
         return self.destroy(request,roleId) 
 
@@ -98,7 +98,7 @@ class RoleListAdd(generics.ListCreateAPIView):
     queryset= RoleModel.objects.all()
     lookup_field='roleId'
     # authentication_classes=[TokenAuthentication]
-    # permission_classes=[IsAuthenticated]
+    permission_classes=[HrPermissionsAll]
 
     def get(self,request): 
         # token = get_token(request)
@@ -114,6 +114,7 @@ class LevelRUD(generics.RetrieveUpdateDestroyAPIView):
     lookup_field='levelId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
+    permission_classes=[HrPermissionsAll]
     
     def get(self,request,levelId=None): 
         # token = get_token(request)
@@ -133,6 +134,7 @@ class LevelListAdd(generics.ListCreateAPIView):
     lookup_field='levelId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
+    permission_classes=[HrPermissionsAll]
 
     def get(self,request): 
         # token = get_token(request)
@@ -255,11 +257,11 @@ class CompanyRUD(generics.RetrieveUpdateDestroyAPIView):
         # token = get_token(request)
         return self.retrieve(request,companyId)
 
-    def put(self,request,id=None):
+    def put(self,request,companyId=None):
         # token = get_token(request)
         return self.update(request,companyId) 
 
-    def delete(self,request,id=None):
+    def delete(self,request,companyId=None):
         # token = get_token(request)
         return self.destroy(request,companyId)  
 
