@@ -1,7 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .models import EmployeModel, DepartmentModel, RoleModel, claimModel, ItemModel, CatagoryModel, OrderModel, CompanyModel, StatusModel, ShipmentScheduleModel, sivModel
-from .serializers import EmployeSerializer, DepartmentSerializer, RoleSerializer, ClaimSerializer, ItemSerializer, CatagorySerializer, OrderSerializer, CompanySerializer, StatusSerializer, ShipmentScheduleSerializer, SivSerializer
+from .models import EmployeModel, DepartmentModel, RoleModel, claimModel, ItemModel, CatagoryModel, OrderModel, CompanyModel, StatusModel, ShipmentScheduleModel, sivModel, InventoryItemModel
+from .serializers import EmployeSerializer, DepartmentSerializer, RoleSerializer, ClaimSerializer, ItemSerializer, CatagorySerializer, OrderSerializer, CompanySerializer, StatusSerializer, ShipmentScheduleSerializer, SivSerializer, InventoryItemModelSerializer
 from rest_framework.views import APIView
 from utilities.token import get_token, get_role
 from django.db.models.signals import post_save
@@ -153,8 +153,8 @@ class LevelListAdd(generics.ListCreateAPIView):
 
 
 class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ItemSerializer
-    queryset = ItemModel.objects.all()
+    serializer_class = InventoryItemModelSerializer
+    queryset = InventoryItemModel.objects.all()
     lookup_field = 'itemId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
@@ -173,8 +173,8 @@ class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ItemListAdd(generics.ListCreateAPIView):
-    serializer_class = ItemSerializer
-    queryset = ItemModel.objects.all()
+    serializer_class = InventoryItemModelSerializer
+    queryset = InventoryItemModel.objects.all()
     lookup_field = 'ItemId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
@@ -258,7 +258,7 @@ class OrderListAdd(generics.ListCreateAPIView):
     def post(self, request):
         # token = get_token(request)
         print("orders quantity")
-        if(checkAvailability(request.data)):
+        if(True):
             return self.create(request)
         else:
             return Response("requested item amount is not available at the moment", status=status.HTTP_404_NOT_FOUND)
@@ -384,8 +384,8 @@ class SivListAdd(generics.ListAPIView):
         return self.list(request)
 
 
-class SIVRUD(generics.RetrieveAPIView):
-    serializer_class = SivSerializer
+class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = SivSerializer()
     queryset = sivModel.objects.all()
     lookup_field = 'sivId'
     # authentication_classes=[TokenAuthentication]
@@ -394,6 +394,18 @@ class SIVRUD(generics.RetrieveAPIView):
     def get(self, request, sivId=None):
         # token = get_token(request)
         return self.retrieve(request, id)
+    def put(self, request, sivId=None):
+        # # token = get_token(request)
+        # DemoSerializer(request.approve, data=request.data, partial=True)
+        print("values are: ")
+        # serializer = SivSerializer(request.data["approved"], data=request.data, partial=True)
+        serializer_class = SivSerializer(approve, data=request.data, partial=True)
+
+        return self.partial_update(request, id)
+    #used to delete siv might be deleted depending on the requirements
+    def delete(self, request, sivId=None):
+        # token = get_token(request)
+        return self.destroy(request, id)
 
 # called after a new order is inserted to database
 
@@ -419,7 +431,7 @@ post_save.connect(issue_siv, sender=OrderModel)
 
 def issue_invoice(sender, instance, **kwargs):
     print("the item status :" + str(instance.approve))
-    if (instance.approve == Approved):
+    if (instance.approve == "Approved"):
         return True
 
 #signal to track if siv is approved and invoice should be generated

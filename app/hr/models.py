@@ -51,13 +51,11 @@ class claimModel(models.Model):
 
 """Order has many items and many company"""
 class OrderModel(models.Model): 
-    orderId = models.AutoField(primary_key=True,auto_created=True) 
+    orderNumber=models.IntegerField(primary_key=True)
     company=models.ForeignKey("CompanyModel", to_field="companyId", on_delete=models.CASCADE)
-    item= models.ForeignKey("ItemModel", verbose_name="Item" , to_field="itemId",on_delete=models.CASCADE, default="")
+    item=models.ForeignKey("InventoryItemModel", to_field="itemId", on_delete=models.CASCADE)
     orderName=models.CharField(max_length=100)
-    orderQuantity=models.IntegerField(null=False)
     salesPerson=models.CharField(max_length=100)
-    orderNumber=models.IntegerField(verbose_name="Order number")
     description=models.CharField(max_length=50)
     orderDate=models.DateField(max_length=20)
     shipmentAddress= models.CharField(max_length=100)
@@ -66,7 +64,17 @@ class OrderModel(models.Model):
      return str(self.orderNumber)
 
 """Item which have one to many relation with Order and many to one with catagory"""
-class ItemModel(models.Model): 
+class ItemModel(models.Model):     
+    itemId = models.AutoField(primary_key=True,auto_created=True)
+    order= models.ForeignKey(OrderModel, related_name="item_order", on_delete=models.CASCADE, null=True, blank=True) 
+    itemName=models.CharField(max_length=100)
+    quantity=models.IntegerField(null=False)
+
+    def __str__(self):
+        return str(self.itemName)  
+
+"""item in the inventory"""
+class InventoryItemModel(models.Model): 
     catagory= models.ForeignKey("CatagoryModel", verbose_name="Catagory" , to_field="catagoryId",on_delete=models.CASCADE)
     itemId = models.AutoField(primary_key=True,auto_created=True) 
     itemName=models.CharField(max_length=100)
@@ -77,7 +85,7 @@ class ItemModel(models.Model):
     discount=models.IntegerField(null=True)
 
     def __str__(self):
-        return str(self.itemName + "(  " + str(self.quantity) + " ) ")    
+        return str(self.itemName + "(  " + str(self.quantity) + " ) ")           
 
 """Catagory has many items"""
 class CatagoryModel(models.Model): 
@@ -91,7 +99,7 @@ class CatagoryModel(models.Model):
 """Status a weak entity depends on Order"""
 class StatusModel(models.Model): 
     status=models.CharField(max_length=100)
-    order= models.ForeignKey("OrderModel", to_field= "orderId",on_delete=models.CASCADE)
+    order= models.ForeignKey("OrderModel", to_field= "orderNumber",on_delete=models.CASCADE)
     location=models.CharField(max_length=50)
     description=models.CharField(max_length=100)
     date=models.DateField(max_length=20)
@@ -164,6 +172,8 @@ class sivModel(models.Model):
     sivDate= models.DateField()
     warehouseName=models.CharField(max_length=100)
     approve=models.CharField(max_length=100, choices=STATUS, default=STATUS.Pending)
+
+
     
     def __str__(self):
         return str(self.sivId) 
