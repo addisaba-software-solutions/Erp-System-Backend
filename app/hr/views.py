@@ -16,15 +16,12 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
     permission_classes=[HrPermissionsAll]
 
     def get(self,request,employeId=None): 
-        # token = get_token(request)
         return self.retrieve(request,employeId)
 
     def put(self,request,employeId=None):
-        # token = get_token(request)
         return self.update(request,employeId) 
 
     def delete(self,request,employeId=None):
-        # token = get_token(request)
         return self.destroy(request,employeId)  
 
 class EmployeListAdd(generics.ListCreateAPIView):
@@ -32,7 +29,7 @@ class EmployeListAdd(generics.ListCreateAPIView):
     queryset= EmployeModel.objects.all()
     lookup_field='employeId'
     # authentication_classes=[TokenAuthentication]
-    permission_classes=[HrPermissionsAll]
+    # permission_classes=[HrPermissionsAll]
     
     def get(self,request): 
         # token = get_token(request)
