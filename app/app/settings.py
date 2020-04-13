@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'manage_auth',
     'hr',
     'drf_yasg',
-    'manage_auth',
 ]
 
 AUTH_USER_MODEL='manage_auth.User'

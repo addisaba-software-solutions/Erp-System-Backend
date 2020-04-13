@@ -4,3 +4,4 @@ drf-yasg>=1.17.1,<1.18
 psycopg2>=2.8.4,<2.9.0
 flake8>=3.7.9,<3.8.0
 django-cors-headers 
+django-model-utils>=4.0.0,<4.1.0
