@@ -1,10 +1,20 @@
-from rest_framework import generics
+from rest_framework import generics,status
 from rest_framework.permissions import IsAuthenticated
 from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel, CompanyModel
 from .serializers import EmployeSerializer,DepartmentSerializer,RoleSerializer,ClaimSerializer,ItemSerializer,CatagorySerializer,OrderSerializer, CompanySerializer
 from rest_framework.views import APIView
 from utilities.token import get_token,get_role
 from  manage_auth.permission import HrPermissionsAll
+
+from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_200_OK,
+    HTTP_409_CONFLICT,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT
+)
 
 
 
@@ -31,13 +41,38 @@ class EmployeListAdd(generics.ListCreateAPIView):
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[HrPermissionsAll]
     
-    def get(self,request): 
-        # token = get_token(request)
-        return self.list(request)
+    def get(self, request): 
+        employe = EmployeModel.objects.all()
+        serializer = EmployeSerializer(employe, many=True)
+        return Response(serializer.data)
+
 
     def post(self,request):
-        # token = get_token(request)
-        return self.create(request)
+        department=DepartmentModel.objects.get(departmentId=request.data.get('department'))
+        roles=RoleModel.objects.get(roleId=request.data.get('roles'))
+        claim=claimModel.objects.get(levelId=request.data.get('claim'))
+        serializer= EmployeSerializer(
+            data=request.data
+        ) 
+
+        if serializer.is_valid():
+                try:
+                    EmployeModel.objects.create(
+                    department=department,
+                    roles=roles,
+                    claim=claim,    
+                    username=serializer.validated_data['username'],
+                    email=serializer.validated_data['email'],
+                    password=serializer.validated_data['password'],
+                    )
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+                except Exception as e:
+                    return Response({'errors':e.args},status=status.HTTP_400_BAD_REQUEST)  
+        else:
+           return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+
+   
     
 class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=DepartmentSerializer

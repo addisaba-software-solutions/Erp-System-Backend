@@ -9,6 +9,8 @@ class EmployeModel(models.Model):
     telephone=models.CharField(max_length=15)
     birthDate=models.DateField(max_length=15,verbose_name="Birth date")
     department=models.ForeignKey("DepartmentModel", verbose_name="Department" , db_column="departmentId",on_delete=models.CASCADE)
+    roles=models.ForeignKey("RoleModel", verbose_name="Role" , db_column="roleId",on_delete=models.CASCADE)
+    level=models.ForeignKey("claimModel", verbose_name="Claim" , db_column="levelId",on_delete=models.CASCADE)
   
     termOfEmployment=models.DateField(max_length=10,verbose_name="Term of Employment")
     country=models.CharField(max_length=20)
