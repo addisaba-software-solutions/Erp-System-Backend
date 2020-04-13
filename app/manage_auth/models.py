@@ -42,7 +42,7 @@ class User(AbstractBaseUser):
     # is_active = models.BooleanField(default=True)
     # is_staff = models.BooleanField(default=False)
     # is_superuser = models.BooleanField(default=False)
-    employe = models.OneToOneField(EmployeModel, related_name='employe',to_field='employeId',on_delete=models.CASCADE,null=True,blank=True)
+    employe = models.OneToOneField(EmployeModel, related_name='employe',to_field='employeId',on_delete=models.CASCADE,null=True,blank=True,unique=True)
     department = models.ForeignKey(DepartmentModel, related_name='department',to_field='departmentId',on_delete=models.CASCADE,null=True,blank=True)
     roles = models.ForeignKey(RoleModel, related_name='roles',to_field='roleId',on_delete=models.CASCADE,null=True,blank=True)
     claim = models.ForeignKey(claimModel, related_name='Claim',to_field='levelId',on_delete=models.CASCADE,null=True,blank=True)

@@ -49,7 +49,7 @@ class EmployeListAdd(generics.ListCreateAPIView):
 
     def post(self,request):
         department=DepartmentModel.objects.get(departmentId=request.data.get('department'))
-        roles=RoleModel.objects.get(roleId=request.data.get('roles'))
+        roles=RoleModel.objects.get(roleId=request.data.get('role'))
         claim=claimModel.objects.get(levelId=request.data.get('claim'))
         serializer= EmployeSerializer(
             data=request.data

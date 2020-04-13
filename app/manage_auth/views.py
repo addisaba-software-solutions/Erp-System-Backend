@@ -46,17 +46,13 @@ class AccountListAdd(APIView):
         query_set = User.objects.all()
         serializer = UserSerializer(query_set,context={'request': request},many=True)
         return Response(serializer.data)
-        # users=User.objects.all().select_related('employe').values_list('employe')
-        # # users = User.objects.all()
-        # serializer = UserSerializer(users, many=True)
-        # return Response(serializer.data)
-
+    
     def post(self, request, *args, **kwargs): # changed  to desired serializer
         employe=EmployeModel.objects.get(employeId=request.data.get('employe'))
         department=DepartmentModel.objects.get(departmentId=request.data.get('department'))
-        roles=RoleModel.objects.get(roleId=request.data.get('roles'))
+        roles=RoleModel.objects.get(roleId=request.data.get('role'))
         claim=claimModel.objects.get(levelId=request.data.get('claim'))
-        #    Field
+        
         serializer= UserSerializer(
             data=request.data
         ) 

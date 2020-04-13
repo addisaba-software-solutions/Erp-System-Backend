@@ -9,6 +9,9 @@ from rest_framework import serializers, exceptions
 from rest_framework import serializers,status
 from rest_framework.validators import UniqueValidator
 from hr.serializers import EmployeSerializer,DepartmentSerializer,ClaimSerializer,RoleSerializer
+
+from hr.models import EmployeModel,RoleModel,claimModel,DepartmentModel
+
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
@@ -19,50 +22,30 @@ from .models import UserManager,EmployeModel
 
 
 class UserSerializer(serializers.ModelSerializer):
-    employe = EmployeSerializer(required=True)
-    department = DepartmentSerializer(required=True)
-    claim = ClaimSerializer(required=True)
-    roles = RoleSerializer(required=True)
-    # employe = serializers.SerializerMethodField('get_children_ordered')
-    # employe=serializers.SerializerMethodField()
+    username=serializers.CharField()
+    pasword=serializers.CharField(write_only=True)
+    employe = EmployeSerializer()
+    department = DepartmentSerializer()
+    claim = ClaimSerializer()
+    roles = RoleSerializer()
 
-    # def get_employe(self,obj):
-    #     return EmployeModel.objects.get(employeId=obj.id)
+    def validate_username(self, val):
+        """
+        Validates user data.
+        """
+        if User.objects.filter(username=val).exists():
+            return serializers.ValidationError('This username already exists')
+
+        return val
 
     class Meta:
         fields = '__all__' 
         model = User
+        extra_kwargs = {
+            'password': {'write_only': True
+            }}
+  
         
-
-    # def validate(self, data):
-    #     """
-    #     Validates user data.
-    #     """
-    #     # users=User.objects.all()
-    #     print("xxxxxxxxxxxxxxxxxxxxxxx")
-    #     return data
-        # return Response({
-        #                  'token': token.key, 
-        #                  'id':user.id,
-        #                  'username':user.username,
-        #                  'email':user.email,
-        #                  'department':{
-        #                      user.department.departmentId,
-        #                      user.department.departmentName,
-
-        #                  },
-        #                  'role':{
-        #                      user.roles.roleId,
-        #                      user.roles.role,
-
-        #                      },
-        #                  'level':{
-        #                      user.claim.levelId,
-        #                      user.claim.level,
-                             
-        #                      },
-                          
-        #                },status=200)
  
 class LoginUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField()  # added missing fields for serializer

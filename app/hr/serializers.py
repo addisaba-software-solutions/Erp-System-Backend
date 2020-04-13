@@ -16,9 +16,9 @@ class ClaimSerializer(serializers.ModelSerializer):
         model=claimModel
         fields = '__all__'  
 class EmployeSerializer(serializers.ModelSerializer):
-    department = DepartmentSerializer(required=True)
-    level = ClaimSerializer(required=True)
-    roles  = RoleSerializer(required=True)
+    department = DepartmentSerializer()
+    level = ClaimSerializer()
+    roles  = RoleSerializer()
 
     class Meta:
         model=EmployeModel
