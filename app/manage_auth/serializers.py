@@ -19,15 +19,15 @@ from .models import UserManager,EmployeModel
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # employe = EmployeSerializer(required=True)
-    # department = DepartmentSerializer(required=True)
-    # claim = ClaimSerializer(required=True)
-    # roles = RoleSerializer(required=True)
+    employe = EmployeSerializer(required=True)
+    department = DepartmentSerializer(required=True)
+    claim = ClaimSerializer(required=True)
+    roles = RoleSerializer(required=True)
     # employe = serializers.SerializerMethodField('get_children_ordered')
-    employe=serializers.SerializerMethodField()
+    # employe=serializers.SerializerMethodField()
 
-    def get_employe(self,obj):
-        return EmployeModel.objects.get(employeId=obj.id)
+    # def get_employe(self,obj):
+    #     return EmployeModel.objects.get(employeId=obj.id)
 
     class Meta:
         fields = '__all__' 
