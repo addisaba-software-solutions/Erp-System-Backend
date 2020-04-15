@@ -37,9 +37,51 @@ class UserSerializer(serializers.ModelSerializer):
         Validates user data.
         """
         if User.objects.filter(username=val).exists():
-            return serializers.ValidationError('This username already exists')
+            raise serializers.ValidationError('This username already exists')
 
         return val
+    def validate_email(self, val):
+
+        """
+        Validates user data.
+        """
+        if User.objects.filter(email=val).exists():
+              raise serializers.ValidationError('This email already exists')
+
+        return val
+    def validate_employe(self, val):
+        """
+        Validates user data.
+        """
+        if User.objects.filter(employe=val).exists():
+              raise serializers.ValidationError('This employe has already account')
+        elif not EmployeModel.objects.filter(employeId=val).exists():
+              raise serializers.ValidationError('This employe has not been registered yet')
+        return val
+
+    def validate_department(self, val):
+        """
+        Validates user data.
+        """
+        if not User.objects.filter(department=val).exists():
+              raise serializers.ValidationError('This department not exist')
+        return val    
+   
+    def validate_claim(self, val):
+        """
+        Validates user data.
+        """
+        if not claimModel.objects.filter(levelId=val).exists():
+              raise serializers.ValidationError('This claim not exist')
+        return val  
+
+    def validate_role(self, val):
+        """
+        Validates user data.
+        """
+        if not RoleModel.objects.filter(roleId=val).exists():
+              raise serializers.ValidationError('This role not exist')
+        return val  
 
     class Meta:
         fields = '__all__' 
