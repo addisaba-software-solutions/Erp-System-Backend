@@ -1,8 +1,11 @@
 {
     "python.linting.enabled": true,
-<<<<<<< HEAD
-    "python.pythonPath": "/usr/local/bin/python3"
-=======
-    "python.pythonPath": "C:\\Users\\Kidus_Solomon\\.windows-build-tools\\python27\\python.exe"
->>>>>>> 723e9e2371f51c945adb40616f57df5d8d6a3276
+    "python.pythonPath": "C:\\Users\\kidus\\AppData\\Local\\Programs\\Python\\Python37\\python.exe",
+    "python.formatting.provider": "black",
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=120",
+        "--ignore=E402,F841,F401,E302,E305",
+    ],
 }

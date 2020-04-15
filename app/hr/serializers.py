@@ -1,136 +1,115 @@
 from rest_framework import serializers
 from .models import *
 
+
 class ClaimSerializer(serializers.ModelSerializer):
     class Meta:
-        model=claimModel
-        fields = '__all__'
-        depth=2
+        model = claimModel
+        fields = "__all__"
+        depth = 2
 
-        
+
 class RoleSerializer(serializers.ModelSerializer):
-    role_levels=ClaimSerializer(
-        many=True,
-        read_only=True,
-     )
+    role_levels = ClaimSerializer(many=True, read_only=True,)
+
     class Meta:
-        model=RoleModel
-        fields = '__all__' 
+        model = RoleModel
+        fields = "__all__"
 
 
-   
 class EmployeReadSerializer(serializers.ModelSerializer):
     class Meta:
-        model=EmployeModel
-        fields = '__all__' 
-        depth=1          
+        model = EmployeModel
+        fields = "__all__"
+        depth = 1
+
+
 class DepartmentSerializer(serializers.ModelSerializer):
 
-    department_roles= RoleSerializer(
-        many=True,
-        read_only=True,
-     )
-    department_employes= EmployeReadSerializer(
-        many=True,
-        read_only=True,
-     )
-    
+    department_roles = RoleSerializer(many=True, read_only=True,)
+    department_employes = EmployeReadSerializer(many=True, read_only=True,)
+
     class Meta:
-        model=DepartmentModel
-        fields = ('departmentName','department_roles','department_employes')  
-        depth=1
-
-  
-
-  
-
+        model = DepartmentModel
+        fields = ("departmentName", "department_roles", "department_employes")
+        depth = 1
 
 
 class EmployeSerializer(serializers.ModelSerializer):
-  
     class Meta:
-        model=EmployeModel
-        fields = '__all__' 
-    
+        model = EmployeModel
+        fields = "__all__"
 
 
 class CatagorySerializer(serializers.ModelSerializer):
     class Meta:
-        model=CatagoryModel
-        fields = '__all__' 
-        depth=1    
-      
-class ItemSerializer(serializers.ModelSerializer):
-    # catagory = CatagorySerializer()
+        model = CatagoryModel
+        fields = "__all__"
 
-    class Meta:
-        model=ItemModel
-        fields = '__all__'  
-        depth=1   
-
-   
 
 class InventoryItemModelSerializer(serializers.ModelSerializer):
     class Meta:
-        model=InventoryItemModel
-        fields = '__all__'
-        depth=1       
+        model = InventoryItemModel
+        fields = "__all__"
+        depth = 1
 
-class OrderSerializer(serializers.ModelSerializer):
-    items = ItemSerializer(many=True)
-    class Meta:
-        model=OrderModel
-        fields = ['orderName', 'salesPerson', 'orderNumber', 'description', 'orderDate', 'shipmentAddress', 'company', 'items' ]  
-        depth=1                     
-
-    def create(self, validated_data):
-        items = validated_data.pop('items')
-        orderModel = OrderModel.objects.create(**validated_data)
-        for item in items:
-            ItemModel.objects.create(itemID=orderModel, **item)
-        return orderModel
-
-    def update(self, instance, validated_data):
-        albums_data = validated_data.pop('album_musician')
-        albums = (instance.album_musician).all()
-        albums = list(albums)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.instrument = validated_data.get('instrument', instance.instrument)
-        instance.save()
-
-        for album_data in albums_data:
-            album = albums.pop(0)
-            album.name = album_data.get('name', album.name)
-            album.release_date = album_data.get('release_date', album.release_date)
-            album.num_stars = album_data.get('num_stars', album.num_stars)
-            album.save()
-        return instance
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
-        model=CompanyModel
-        fields = '__all__'  
+        model = CompanyModel
+        fields = "__all__"
+
+
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ItemModel
+        fields = "__all__"
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    item_order = ItemSerializer(many=True)
+
+    class Meta:
+        model = OrderModel
+        fields = [
+            "orderid",
+            "orderNumber",
+            "company",
+            "orderName",
+            "salesPerson",
+            "description",
+            "orderDate",
+            "shipmentAddress",
+            "item_order",
+        ]
+
+    def create(self, validated_data):
+        items_data = validated_data.pop("item_order")
+        order = OrderModel.objects.create(**validated_data)
+        for item_data in items_data:
+            ItemModel.objects.create(order=order, **item_data)
+        return order
+
+
+class OrderReadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderModel
+        fields = "__all__"
+
 
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
-        model=StatusModel
-        fields = '__all__'          
+        model = StatusModel
+        fields = "__all__"
 
 
 class ShipmentScheduleSerializer(serializers.ModelSerializer):
     class Meta:
-        model=ShipmentScheduleModel
-        fields = '__all__' 
+        model = ShipmentScheduleModel
+        fields = "__all__"
+
 
 class SivSerializer(serializers.ModelSerializer):
     class Meta:
-        model=sivModel
-        fields = '__all__' 
-
-        # def update(self, instance, validated_data):
-        #     print("updating a single approve value")
-        #     sivModel = sivModel.objects.get(pk=instance.id)
-        #     sivModel.objects.filter(pk=instance.id)\
-        #                     .update(**validated_data)
-        #     return sivModel
+        model = sivModel
+        fields = "__all__"
