@@ -1,55 +1,87 @@
 from rest_framework import serializers
-from .models import EmployeModel,DepartmentModel,RoleModel,claimModel,ItemModel,CatagoryModel,OrderModel,CompanyModel,StatusModel,ShipmentScheduleModel, sivModel, InventoryItemModel
-
-class EmployeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=EmployeModel
-        fields = '__all__' 
-        
-class DepartmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=DepartmentModel
-        fields = '__all__' 
-
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=RoleModel
-        fields = '__all__' 
+from .models import *
 
 class ClaimSerializer(serializers.ModelSerializer):
     class Meta:
         model=claimModel
-        fields = '__all__'  
-class EmployeSerializer(serializers.ModelSerializer):
-    department = DepartmentSerializer()
-    level = ClaimSerializer()
-    roles  = RoleSerializer()
+        fields = '__all__'
+        depth=2
 
+        
+class RoleSerializer(serializers.ModelSerializer):
+    role_levels=ClaimSerializer(
+        many=True,
+        read_only=True,
+     )
+    class Meta:
+        model=RoleModel
+        fields = '__all__' 
+
+
+   
+class EmployeReadSerializer(serializers.ModelSerializer):
     class Meta:
         model=EmployeModel
-        fields = '__all__'         
+        fields = '__all__' 
+        depth=1          
+class DepartmentSerializer(serializers.ModelSerializer):
 
-      
-class ItemSerializer(serializers.ModelSerializer):
+    department_roles= RoleSerializer(
+        many=True,
+        read_only=True,
+     )
+    department_employes= EmployeReadSerializer(
+        many=True,
+        read_only=True,
+     )
+    
     class Meta:
-        model=ItemModel
-        fields = ('itemId', 'itemName', 'quantity', 'order')       
+        model=DepartmentModel
+        fields = ('departmentName','department_roles','department_employes')  
+        depth=1
+
+  
+
+  
+
+
+
+class EmployeSerializer(serializers.ModelSerializer):
+  
+    class Meta:
+        model=EmployeModel
+        fields = '__all__' 
+    
+
 
 class CatagorySerializer(serializers.ModelSerializer):
     class Meta:
         model=CatagoryModel
-        fields = '__all__'    
+        fields = '__all__' 
+        depth=1    
+      
+class ItemSerializer(serializers.ModelSerializer):
+    # catagory = CatagorySerializer()
+
+    class Meta:
+        model=ItemModel
+        fields = '__all__'  
+        depth=1   
+
+   
 
 class InventoryItemModelSerializer(serializers.ModelSerializer):
     class Meta:
         model=InventoryItemModel
-        fields = '__all__'   
+        fields = '__all__'
+        depth=1       
 
 class OrderSerializer(serializers.ModelSerializer):
     items = ItemSerializer(many=True)
     class Meta:
         model=OrderModel
-        fields = ['orderName', 'salesPerson', 'orderNumber', 'description', 'orderDate', 'shipmentAddress', 'company', 'items' ]                   
+        fields = ['orderName', 'salesPerson', 'orderNumber', 'description', 'orderDate', 'shipmentAddress', 'company', 'items' ]  
+        depth=1                     
 
     def create(self, validated_data):
         items = validated_data.pop('items')

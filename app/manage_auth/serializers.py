@@ -24,10 +24,6 @@ from .models import UserManager,EmployeModel
 class UserSerializer(serializers.ModelSerializer):
     username=serializers.CharField()
     pasword=serializers.CharField(write_only=True)
-    employe = EmployeSerializer()
-    department = DepartmentSerializer()
-    claim = ClaimSerializer()
-    roles = RoleSerializer()
 
     def validate_username(self, val):
         """
@@ -44,6 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True
             }}
+        depth=1    
   
         
  

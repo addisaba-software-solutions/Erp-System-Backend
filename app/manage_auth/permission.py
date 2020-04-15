@@ -1,5 +1,6 @@
 from rest_framework import permissions
-from utilities.token import get_token,get_role,get_department,get_claim,is_admin
+from utilities.token import *
+
 from rest_framework.authtoken.models import Token
 DANGER_METHODS = ['GET','POST','PUT','DELETE', 'HEAD', 'OPTIONS']
 CRITICAL_METHODS = ['GET', 'HEAD','POST','PUT', 'OPTIONS',]
@@ -14,7 +15,6 @@ class AdminPermissionsAll(permissions.BasePermission):
     def has_permission(self, request, view):
         token=get_token(request)
         admin=is_admin(token)
-
         if admin:   
            return True
         else:
@@ -27,6 +27,7 @@ class FinancePermissionsAll(permissions.BasePermission):
     """
     def has_permission(self, request, view):
         token=get_token(request)
+       
         department=get_department(token)
         role=get_role(token)
         claim=get_claim(token)
@@ -51,25 +52,26 @@ class HrPermissionsAll(permissions.BasePermission):
     Everyone else can do nothing.
     """
     def has_permission(self, request, view):
-    
-        token=get_token(request)
-        department=get_department(token)
-        role=get_role(token)
-        claim=get_claim(token)
-        if str(department) == 'HR':   
-            if str(claim) == 'Manager':
-                  return True
+        token=get_token(self,request)
+        if(token!=False):
+               department=get_department(token)
+               role=get_role(token)
+               claim=get_claim(token)
 
-            elif str(claim) == 'Senior' and request.method in CRITICAL_METHODS:
-                 return True
+               if str(department) == 'HR':   
+                    if str(claim) == 'Manager':
+                         return True
 
-            elif str(claim) == 'Junior' and request.method in SAFE_METHODS:
-                 return True
-            else:
-                 return False
+                    elif str(claim) == 'Senior' and request.method in CRITICAL_METHODS:
+                         return True
 
-        else:
-            return False
+                    elif str(claim) == 'Junior' and request.method in SAFE_METHODS:
+                         return True
+                    else:
+                         return False
+
+               else:
+                    return False
 
 class SalesPermissionsAll(permissions.BasePermission):
     """

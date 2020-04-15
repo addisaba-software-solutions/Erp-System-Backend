@@ -1,7 +1,7 @@
 from rest_framework import generics,status
 from rest_framework.permissions import IsAuthenticated
-from .models import EmployeModel, DepartmentModel, RoleModel, claimModel, ItemModel, CatagoryModel, OrderModel, CompanyModel, StatusModel, ShipmentScheduleModel, sivModel, InventoryItemModel
-from .serializers import EmployeSerializer, DepartmentSerializer, RoleSerializer, ClaimSerializer, ItemSerializer, CatagorySerializer, OrderSerializer, CompanySerializer, StatusSerializer, ShipmentScheduleSerializer, SivSerializer, InventoryItemModelSerializer
+from .models import *
+from .serializers import *
 from rest_framework.views import APIView
 from utilities.token import get_token,get_role
 from  manage_auth.permission import HrPermissionsAll
@@ -37,55 +37,72 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self,request,employeId=None):
         return self.destroy(request,employeId)  
+        # names=Model.objects.filter(name__istartswith='c')
 
 class EmployeListAdd(generics.ListCreateAPIView):
-    serializer_class = EmployeSerializer
-    queryset = EmployeModel.objects.all()
-    lookup_field = 'employeId'
-    # authentication_classes=[TokenAuthentication]
-    # permission_classes=[HrPermissionsAll]
+        # serializer_class = EmployeSerializer
+        queryset = EmployeModel.objects.all()
+        lookup_field = 'employeId'
+        # authentication_classes=[TokenAuthentication]
+        permission_classes=[HrPermissionsAll]
+
+        def get_serializer_class(self):
+                if self.request.method == 'POST':
+                    serializer_class=EmployeSerializer
+                    
+                elif self.request.method == 'GET':
+                    serializer_class = EmployeReadSerializer      
+        
+                return serializer_class
     
-    def get(self, request): 
-        employe = EmployeModel.objects.all()
-        serializer = EmployeSerializer(employe, many=True)
-        return Response(serializer.data)
 
+        def post(self,request):
+   
+            serializer= EmployeSerializer(
+                data=request.data,
+            ) 
 
-    def post(self,request):
-        department=DepartmentModel.objects.get(departmentId=request.data.get('department'))
-        roles=RoleModel.objects.get(roleId=request.data.get('role'))
-        claim=claimModel.objects.get(levelId=request.data.get('claim'))
-        serializer= EmployeSerializer(
-            data=request.data
-        ) 
+            if serializer.is_valid():
+                    department=DepartmentModel.objects.get(departmentId=request.data.get('department'))
+                    roles=RoleModel.objects.get(roleId=request.data.get('roles'))
+                    claim=claimModel.objects.get(levelId=request.data.get('level'))
+                    
+                    try:
+                        EmployeModel.objects.create(
+                        department=department,
+                        roles=roles,
+                        level=claim,    
+                        firstName=request.data.get('firstName'),
+                        lastName= request.data.get("lastName"),
+                        email=request.data.get("email"),
+                        hiredDate=request.data.get("hiredDate"),
+                        telephone=request.data.get("telephone"),
+                        birthDate=request.data.get("birthDate"),
+                        termOfEmployment=request.data.get("termOfEmployment"),
+                        country=request.data.get("country"),
+                        region=request.data.get("region"),
+                        city=request.data.get("city"),
+                        )
+                        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if serializer.is_valid():
-                try:
-                    EmployeModel.objects.create(
-                    department=department,
-                    roles=roles,
-                    claim=claim,    
-                    username=serializer.validated_data['username'],
-                    email=serializer.validated_data['email'],
-                    password=serializer.validated_data['password'],
-                    )
-                    return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-                except Exception as e:
-                    return Response({'errors':e.args},status=status.HTTP_400_BAD_REQUEST)  
-        else:
-           return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+                    except Exception as e:
+                        return Response({'errors':e.args},status=status.HTTP_400_BAD_REQUEST)  
+            else:
+              return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
 
    
-    
+
+
+
 class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = DepartmentSerializer
     queryset = DepartmentModel.objects.all()
     lookup_field = 'departmentId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
-    permission_classes=[HrPermissionsAll]
-    
+    # permission_classes=[HrPermissionsAll]
+
+   
+
     def get(self,request,departmentId=None): 
         # token = get_token(request)
         return self.retrieve(request, departmentId)
@@ -100,24 +117,36 @@ class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
 
 
 class DepartmentListAdd(generics.ListCreateAPIView):
-    serializer_class=DepartmentSerializer
+    serializer_class = DepartmentSerializer
     queryset= DepartmentModel.objects.all()
     lookup_field='departmentId'
-    permission_classes=[HrPermissionsAll]
+    # permission_classes=[HrPermissionsAll]
+   
+   
+    def post(self,request):
+        serializer= DepartmentSerializer(
+            data=request.data,
+        ) 
 
-    def get(self, request):
-        # token = get_token(request)
-        return self.list(request)
+        if serializer.is_valid():
+                # role=Role.objects.get(roleId=request.data.get('role'))
+                try:
+                    DepartmentModel.objects.create(
+                    departmentName=serializer.validated_data['departmentName'],
+                    )
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def post(self, request):
-        # token = get_token(request)
-        return self.create(request)
+                except Exception as e:
+                    return Response({'errors':e.args},status=status.HTTP_400_BAD_REQUEST)  
+        else:
+            return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RoleRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class=RoleSerializer
     lookup_field='roleId'
-    permission_classes=[HrPermissionsAll]
+    # permission_classes=[HrPermissionsAll]
     
     def get(self,request,roleId=None): 
         # token = get_token(request)
@@ -137,11 +166,9 @@ class RoleListAdd(generics.ListCreateAPIView):
     queryset = RoleModel.objects.all()
     lookup_field = 'roleId'
     # authentication_classes=[TokenAuthentication]
-    permission_classes=[HrPermissionsAll]
+    # permission_classes=[HrPermissionsAll]
+  
 
-    def get(self, request):
-        # token = get_token(request)
-        return self.list(request)
 
     def post(self, request):
         # token = get_token(request)
@@ -154,7 +181,7 @@ class LevelRUD(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'levelId'
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
-    permission_classes=[HrPermissionsAll]
+    # permission_classes=[HrPermissionsAll]
     
     def get(self,request,levelId=None): 
         # token = get_token(request)
@@ -173,16 +200,32 @@ class LevelListAdd(generics.ListCreateAPIView):
     serializer_class = ClaimSerializer
     queryset = claimModel.objects.all()
     lookup_field = 'levelId'
+    
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
-    permission_classes=[HrPermissionsAll]
-
-    def get(self, request):
-        # token = get_token(request)
-        return self.list(request)
+    # permission_classes=[HrPermissionsAll]
 
     def post(self, request):
-        # token = get_token(request)
+        serializer= ClaimSerializer(
+            data=request.data,
+         ) 
+        if serializer.is_valid():
+            role=RoleModel.objects.get(roleId=request.data.get('role'))
+            try:
+                claimModel.objects.create(
+                level=request.data.get('level') ,   
+                role=role,
+                )
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            except Exception as e:
+                return Response({'errors':e.args},status=status.HTTP_400_BAD_REQUEST)  
+        else:
+            return Response({'errors':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+
+ 
+
+        role=RoleModel.objects.get(roleId=request.data.get('role'))
         return self.create(request)
 
 

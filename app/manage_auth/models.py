@@ -5,13 +5,30 @@ from hr.models import EmployeModel, DepartmentModel, RoleModel,claimModel
 from rest_framework.response import Response
 
 class UserManager(BaseUserManager):
-   def create_user(self, email, username, password=None,**extra_fields):
+    
+   def create_user(self, email, username, password=None,department=None,employe=None,roles=None,claim=None,**extra_fields):
+        # if not DepartmentModel.objects.get(departmentId=department).exists()):
+        #    department=DepartmentModel.objects.get(departmentId=department)
+        # else:
+        #    DepartmentModel.objects.create(departmentId=department,departmentName="It")
+
+        # employe=EmployeModel.objects.get(employeId=employe)
+        # roles=RoleModel.objects.get(roleId=roles)
+        # claim=claimModel.objects.get(levelId=claim)
+
         if not email:
             raise ValueError('Users must have an email address')
         if not username:
             raise ValueError('Users must have a username')
     
-        user = self.model(email=self.normalize_email(email),username=username,**extra_fields)
+        user = self.model(email=self.normalize_email(email),
+                          username=username,
+                          department=department,
+                          employe=employe,
+                          roles=roles,
+                          claim=claim,
+                          **extra_fields)
+
         user.set_password(password)
         user.is_admin = True
         user.save(using=self._db)
@@ -22,6 +39,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(
             email=self.normalize_email(email),
             username=username,
+            
         )
         user.set_password(password)
         user.is_admin = True

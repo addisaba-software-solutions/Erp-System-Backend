@@ -14,10 +14,9 @@ class EmployeModel(models.Model):
     hiredDate=models.DateField(max_length=15,verbose_name="Hired date")
     telephone=models.CharField(max_length=15)
     birthDate=models.DateField(max_length=15,verbose_name="Birth date")
-    department=models.ForeignKey("DepartmentModel", verbose_name="Department" , db_column="departmentId",on_delete=models.CASCADE)
-    roles=models.ForeignKey("RoleModel", verbose_name="Role" , db_column="roleId",on_delete=models.CASCADE)
+    department=models.ForeignKey("DepartmentModel", verbose_name="Department",related_name='department_employes', db_column="departmentId",on_delete=models.CASCADE)
+    roles=models.ForeignKey("RoleModel", verbose_name="Role" ,related_name='role_detail',on_delete=models.CASCADE)
     level=models.ForeignKey("claimModel", verbose_name="Claim" , db_column="levelId",on_delete=models.CASCADE)
-  
     termOfEmployment=models.CharField(max_length=20,verbose_name="Term of Employment",choices= TERMOFEMPLOYMENTOPTION)
     country=models.CharField(max_length=20)
     region=models.CharField(max_length=25)
@@ -30,7 +29,7 @@ class EmployeModel(models.Model):
 class DepartmentModel(models.Model): 
     departmentId = models.AutoField(primary_key=True,unique=True) 
     departmentName=models.CharField(max_length=20,verbose_name="Department Name")
-
+    
     def __str__(self):
         return self.departmentName        
 
@@ -38,7 +37,7 @@ class DepartmentModel(models.Model):
 class RoleModel(models.Model): 
     roleId = models.AutoField(primary_key=True,auto_created=True) 
     role=models.CharField(max_length=20)
-    department=models.ForeignKey("DepartmentModel", verbose_name="Department" , db_column="departmentId",on_delete=models.CASCADE)
+    department=models.ForeignKey("DepartmentModel", verbose_name="Department" ,related_name='department_roles',on_delete=models.CASCADE)
     
     def __str__(self):
         return self.role
@@ -46,7 +45,7 @@ class RoleModel(models.Model):
 class claimModel(models.Model): 
     levelId = models.AutoField(primary_key=True,auto_created=True) 
     level=models.CharField(max_length=20)
-    role=models.ForeignKey("RoleModel", verbose_name="Role" , db_column="roleId",on_delete=models.CASCADE)
+    role=models.ForeignKey("RoleModel", verbose_name="Role" ,related_name='role_levels', db_column="roleId",on_delete=models.CASCADE)
     
     def __str__(self):
         return str(self.level)
@@ -68,7 +67,7 @@ class OrderModel(models.Model):
 """Item which have one to many relation with Order and many to one with catagory"""
 class ItemModel(models.Model):     
     itemId = models.AutoField(primary_key=True,auto_created=True)
-    order= models.ForeignKey(OrderModel, related_name="item_order", on_delete=models.CASCADE, null=True, blank=True) 
+    order= models.ForeignKey(OrderModel, related_name="item_order",to_field='orderNumber', on_delete=models.CASCADE, null=True, blank=True) 
     itemName=models.CharField(max_length=100)
     quantity=models.IntegerField(null=False)
 
