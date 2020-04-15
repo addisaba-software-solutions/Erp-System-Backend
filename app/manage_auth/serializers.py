@@ -6,11 +6,12 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework import serializers, exceptions
+from django.core import serializers as jsonParse
 from rest_framework import serializers,status
 from rest_framework.validators import UniqueValidator
-from hr.serializers import EmployeSerializer,DepartmentSerializer,ClaimSerializer,RoleSerializer
+from hr.serializers import *
 
-from hr.models import EmployeModel,RoleModel,claimModel,DepartmentModel
+from hr.models import *
 
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -19,6 +20,7 @@ from rest_framework.status import (
     HTTP_409_CONFLICT
 )
 from .models import UserManager,EmployeModel
+from utilities.token import *
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -64,6 +66,33 @@ class LoginUserSerializer(serializers.ModelSerializer):
             return {
                 'error': 'This user has been deactivated.'
             }
+        role=None
+        if not user.roles:
+           role=None
+        else:
+            role={
+                'roleId':user.roles.roleId,
+                'role':user.roles.role,
+
+            }
+        department=None
+        if not user.department:
+           department=None
+        else:
+            department={
+                'departmentId':user.department.departmentId,
+                'departmentName':user.department.departmentName,
+
+            }
+        level=None
+        if not user.claim:
+           level=None
+        else:
+            level={
+                'levelId':user.claim.levelId,
+                'level':user.claim.level,
+
+            }
 
         token, _ = Token.objects.get_or_create(user=user)
         return Response({
@@ -71,20 +100,8 @@ class LoginUserSerializer(serializers.ModelSerializer):
                          'id':user.id,
                          'username':user.username,
                          'email':user.email,
-                         'department':{
-                             user.department.departmentId,
-                             user.department.departmentName,
-
-                         },
-                         'role':{
-                             user.roles.roleId,
-                             user.roles.role,
-
-                             },
-                         'level':{
-                             user.claim.levelId,
-                             user.claim.level,
-                             
-                             },
+                         'department':department,
+                         'role':role,
+                         'level':level,
                           
                        },status=200)

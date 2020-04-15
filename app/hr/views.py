@@ -43,7 +43,6 @@ class EmployeListAdd(generics.ListCreateAPIView):
         # serializer_class = EmployeSerializer
         queryset = EmployeModel.objects.all()
         lookup_field = 'employeId'
-        # authentication_classes=[TokenAuthentication]
         permission_classes=[HrPermissionsAll]
 
         def get_serializer_class(self):
