@@ -43,7 +43,7 @@ class EmployeListAdd(generics.ListCreateAPIView):
         # serializer_class = EmployeSerializer
         queryset = EmployeModel.objects.all()
         lookup_field = 'employeId'
-        permission_classes=[HrPermissionsAll]
+        # permission_classes=[HrPermissionsAll]
 
         def get_serializer_class(self):
                 if self.request.method == 'POST':
@@ -119,7 +119,7 @@ class DepartmentListAdd(generics.ListCreateAPIView):
     serializer_class = DepartmentSerializer
     queryset= DepartmentModel.objects.all()
     lookup_field='departmentId'
-    # permission_classes=[HrPermissionsAll]
+    permission_classes=[HrPermissionsAll]
    
    
     def post(self,request):

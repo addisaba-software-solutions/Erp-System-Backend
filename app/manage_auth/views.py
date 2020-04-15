@@ -48,19 +48,27 @@ class AccountListAdd(APIView):
         return Response(serializer.data)
     
     def post(self, request, *args, **kwargs): # changed  to desired serializer
-        employe=EmployeModel.objects.get(employeId=request.data.get('employe'))
-        department=DepartmentModel.objects.get(departmentId=request.data.get('department'))
-        role=RoleModel.objects.get(roleId=request.data.get('role'))
-        claim=claimModel.objects.get(levelId=request.data.get('claim'))
-        
+    
         serializer= UserSerializer(
             data=request.data
         ) 
-
+        
         if serializer.is_valid():
+                employe=EmployeModel.objects.get(employeId=request.data.get('employe'))
+                department=DepartmentModel.objects.get(departmentId=request.data.get('department'))
+                role=RoleModel.objects.get(roleId=request.data.get('role'))
+                claim=claimModel.objects.get(levelId=request.data.get('claim'))
+                
                 try:
-                    User.objects.create_user(
-                    serializer.validated_data
+                    User.objects.create_user( 
+                    email=request.data.get('email'),       
+                    username=request.data.get('username'),
+                    password=request.data.get('password'),
+                    employe=employe,
+                    department=department,  
+                    roles=role, 
+                    claim=claim,
+                 
                     )
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
 

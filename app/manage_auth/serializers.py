@@ -25,7 +25,12 @@ from utilities.token import *
 
 class UserSerializer(serializers.ModelSerializer):
     username=serializers.CharField()
-    pasword=serializers.CharField(write_only=True)
+    email=serializers.EmailField()
+    employe=serializers.CharField()
+    department=serializers.CharField()
+    claim=serializers.CharField()
+    role=serializers.CharField()
+    password=serializers.CharField(write_only=True)
 
     def validate_username(self, val):
         """
@@ -103,5 +108,4 @@ class LoginUserSerializer(serializers.ModelSerializer):
                          'department':department,
                          'role':role,
                          'level':level,
-                          
                        },status=200)

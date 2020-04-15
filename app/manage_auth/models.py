@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 class UserManager(BaseUserManager):
     
-   def create_user(self, email, username, password=None,department=None,employe=None,roles=None,claim=None,**extra_fields):
+   def create_user(self, email, username, password,**extra_fields):
         # if not DepartmentModel.objects.get(departmentId=department).exists()):
         #    department=DepartmentModel.objects.get(departmentId=department)
         # else:
@@ -23,10 +23,7 @@ class UserManager(BaseUserManager):
     
         user = self.model(email=self.normalize_email(email),
                           username=username,
-                          department=department,
-                          employe=employe,
-                          roles=roles,
-                          claim=claim,
+                          password=password,
                           **extra_fields)
 
         user.set_password(password)
