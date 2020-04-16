@@ -37,7 +37,6 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def delete(self, request, employeId=None):
         return self.destroy(request, employeId)
-        # names=Model.objects.filter(name__istartswith='c')
 
 
 class EmployeListAdd(generics.ListCreateAPIView):
@@ -101,15 +100,15 @@ class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[HrPermissionsAll]
 
     def get(self, request, departmentId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, departmentId)
 
     def put(self, request, departmentId=None):
-        # token = get_token(request)
+
         return self.update(request, departmentId)
 
     def delete(self, request, departmentId=None):
-        # token = get_token(request)
+
         return self.destory(request, departmentId)
 
 
@@ -144,15 +143,15 @@ class RoleRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[HrPermissionsAll]
 
     def get(self, request, roleId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, roleId)
 
     def put(self, request, roleId=None):
-        # token = get_token(request)
+
         return self.update(request, roleId)
 
     def delete(self, request, roleId=None):
-        # token = get_token(request)
+
         return self.destroy(request, roleId)
 
 
@@ -164,7 +163,7 @@ class RoleListAdd(generics.ListCreateAPIView):
     # permission_classes=[HrPermissionsAll]
 
     def post(self, request):
-        # token = get_token(request)
+
         return self.create(request)
 
 
@@ -177,15 +176,15 @@ class LevelRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[HrPermissionsAll]
 
     def get(self, request, levelId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, levelId)
 
     def put(self, request, levelId=None):
-        # token = get_token(request)
+
         return self.update(request, levelId)
 
     def delete(self, request, levelId=None):
-        # token = get_token(request)
+
         return self.destroy(request, levelId)
 
 
@@ -219,6 +218,9 @@ class LevelListAdd(generics.ListCreateAPIView):
         return self.create(request)
 
 
+"""list of items in the order"""
+
+
 class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = InventoryItemModelSerializer
     queryset = InventoryItemModel.objects.all()
@@ -227,15 +229,15 @@ class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, itemId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, itemId)
 
     def put(self, request, itemId=None):
-        # token = get_token(request)
+
         return self.update(request, itemId)
 
     def delete(self, request, itemId=None):
-        # token = get_token(request)
+
         return self.destroy(request, itemId)
 
 
@@ -247,11 +249,11 @@ class ItemListAdd(generics.ListCreateAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-        # token = get_token(request)
+
         return self.list(request)
 
     def post(self, request):
-        # token = get_token(request)
+
         return self.create(request)
 
 
@@ -263,15 +265,15 @@ class OrderItemRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, itemId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, itemId)
 
     def put(self, request, itemId=None):
-        # token = get_token(request)
+
         return self.update(request, itemId)
 
     def delete(self, request, itemId=None):
-        # token = get_token(request)
+
         return self.destroy(request, itemId)
 
 
@@ -283,11 +285,11 @@ class OrderItemListAdd(generics.ListCreateAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-        # token = get_token(request)
+
         return self.list(request)
 
     def post(self, request):
-        # token = get_token(request)
+
         return self.create(request)
 
 
@@ -299,15 +301,15 @@ class CatagoryRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, catagoryId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, catagoryId)
 
     def put(self, request, catagoryId=None):
-        # token = get_token(request)
+
         return self.update(request, catagoryId)
 
     def delete(self, request, catagoryId=None):
-        # token = get_token(request)
+
         return self.destroy(request, catagoryId)
 
 
@@ -319,11 +321,11 @@ class CatagoryListAdd(generics.ListCreateAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-        # token = get_token(request)
+
         return self.list(request)
 
     def post(self, request):
-        # token = get_token(request)
+
         return self.create(request)
 
 
@@ -335,16 +337,19 @@ class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, orderId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, orderid)
 
     def put(self, request, orderId=None):
-        # token = get_token(request)
+
         return self.update(request, orderid)
 
     def delete(self, request, orderId=None):
-        # token = get_token(request)
+
         return self.destroy(request, orderid)
+
+
+"""item order which have list of items in one order"""
 
 
 class OrderListAdd(generics.ListCreateAPIView):
@@ -355,15 +360,16 @@ class OrderListAdd(generics.ListCreateAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-        # token = get_token(request)
+
         return self.list(request)
 
     def post(self, request):
-        # token = get_token(request)
-        print("orders quantity")
+
         if True:
             serializer = OrderSerializer(data=request.data,)
+            print("orders kjhdfskjnhfdkj")
             if serializer.is_valid():
+                print("in the validslkafj")
                 serializer.save()
                 return Response({"order success"}, status=HTTP_201_CREATED)
         else:
@@ -381,15 +387,15 @@ class CompanyRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, companyId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, companyId)
 
     def put(self, request, companyId=None):
-        # token = get_token(request)
+
         return self.update(request, companyId)
 
     def delete(self, request, companyId=None):
-        # token = get_token(request)
+
         return self.destroy(request, companyId)
 
 
@@ -401,11 +407,11 @@ class CompanyListAdd(generics.ListCreateAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-        # token = get_token(request)
+
         return self.list(request)
 
     def post(self, request):
-        # token = get_token(request)
+
         return self.create(request)
 
 
@@ -417,15 +423,15 @@ class StatusRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, id=None):
-        # token = get_token(request)
+
         return self.retrieve(request, id)
 
     def put(self, request, id=None):
-        # token = get_token(request)
+
         return self.update(request, id)
 
     def delete(self, request, id=None):
-        # token = get_token(request)
+
         return self.destroy(request, id)
 
 
@@ -437,11 +443,11 @@ class StatusListAdd(generics.ListCreateAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-        # token = get_token(request)
+
         return self.list(request)
 
     def post(self, request):
-        # token = get_token(request)
+
         return self.create(request)
 
 
@@ -453,15 +459,15 @@ class ShipmentScheduleRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, shipmentId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, id)
 
     def put(self, request, shipmentId=None):
-        # token = get_token(request)
+
         return self.update(request, id)
 
     def delete(self, request, shipmentId=None):
-        # token = get_token(request)
+
         return self.destroy(request, id)
 
 
@@ -473,11 +479,11 @@ class ShipmentScheduleListAdd(generics.ListCreateAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-        # token = get_token(request)
+
         return self.list(request)
 
     def post(self, request):
-        # token = get_token(request)
+
         return self.create(request)
 
 
@@ -489,33 +495,56 @@ class SivListAdd(generics.ListAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-        # token = get_token(request)
+
         return self.list(request)
 
 
 class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = SivSerializer()
+    serializer_class = SivSerializer
     queryset = sivModel.objects.all()
     lookup_field = "sivId"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, sivId=None):
-        # token = get_token(request)
+
         return self.retrieve(request, id)
-
-    def put(self, request, sivId=None):
-        # # token = get_token(request)
-        # DemoSerializer(request.approve, data=request.data, partial=True)
-        print("values are: ")
-        # serializer = SivSerializer(request.data["approved"], data=request.data, partial=True)
-        serializer_class = SivSerializer(approve, data=request.data, partial=True)
-
-        return self.partial_update(request, id)
 
     # used to delete siv might be deleted depending on the requirements
     def delete(self, request, sivId=None):
-        # token = get_token(request)
+
+        return self.destroy(request, id)
+
+
+"""the end point to get invoice for order"""
+
+
+class InvoiceListAdd(generics.ListAPIView):
+    serializer_class = InvoiceItemSerializer
+    queryset = InvoiceModel.objects.all()
+    lookup_field = "invoiceId"
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+
+    def get(self, request):
+
+        return self.list(request)
+
+
+class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = InvoiceItemSerializer
+    queryset = InvoiceModel.objects.all()
+    lookup_field = "invoiceId"
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+
+    def get(self, request, invoiceId=None):
+
+        return self.retrieve(request, id)
+
+    # used to delete siv might be deleted depending on the requirements
+    def delete(self, request, sivId=None):
+
         return self.destroy(request, id)
 
 
@@ -544,8 +573,19 @@ def issue_siv(sender, instance, **kwargs):
     siv.save()
 
 
-# signal to track if new order is inserted to the database
-post_save.connect(issue_siv, sender=OrderModel)
+def updateStatus(sender, instance, **kwargs):
+    "update the status to created"
+    print("the item model is populated")
+    # warehouseName = OrderModel.objects.values_list("warehouseName", flat=True).get(
+    #     pk=instance.itemName
+    # )
+    # print(warehouseName)
+    # get the warehouse name from the itemname
+    # InventoryItemModel.objects.get.
+
+
+# update the order status to created after a data is inseted to the ordermodel
+post_save.connect(updateStatus, sender=ItemModel)
 
 
 def issue_invoice(sender, instance, **kwargs):
@@ -558,16 +598,30 @@ def issue_invoice(sender, instance, **kwargs):
 post_save.connect(issue_invoice, sender=sivModel)
 
 # checkes items availability and update after order
-def checkAvailability(qty):
-    orderQuantity = qty["orderQuantity"]
-    itemQuantity = ItemModel.objects.values_list("quantity", flat=True).get(
-        pk=qty["item"]
-    )
-    if int(orderQuantity) <= int(itemQuantity):
-        newItemQuantity = int(itemQuantity) - int(orderQuantity)
-        item = ItemModel.objects.get(pk=qty["item"])
-        item.quantity = str(newItemQuantity)
-        item.save()
-        return True
-    else:
-        return False
+def checkAvailability(data):
+    items = data["item_order"]
+    print("the tegern")
+    print(items)
+
+    for i in range(len(items)):
+        print("the iten name is")
+        item_name = items[i]["itemName"]
+        print(item_name)
+        item_qty = items[i]["quantity"]
+        print(item_qty)
+
+        # availableQuantity = InventoryItemModel.objects.values_list(
+        #     "quantity", flat=True
+        # ).get(
+        #     pk="computer"
+        # )  # just for test pk should be replaced with item_name
+        print(availableQuantity)
+
+        if availableQuantity <= item_qty:
+            newItemQuantity = int(item_qty) - int(availableQuantity)
+            item = InventoryItemModel.objects.get(pk=item_name)
+            item.quantity = str(newItemQuantity)
+            item.save()
+            return True
+        else:
+            return False

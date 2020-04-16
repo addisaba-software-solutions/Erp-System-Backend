@@ -31,7 +31,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DepartmentModel
-        fields = ("departmentName", "department_roles", "department_employes")
+        fields = (
+            "departmentId",
+            "departmentName",
+            "department_roles",
+            "department_employes",
+        )
         depth = 1
 
 
@@ -51,7 +56,6 @@ class InventoryItemModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = InventoryItemModel
         fields = "__all__"
-        depth = 1
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -63,7 +67,7 @@ class CompanySerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemModel
-        fields = "__all__"
+        fields = ["itemName", "quantity", "InventoryItem"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -84,8 +88,12 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+        print("the item is nokskfhkjdfshk")
         items_data = validated_data.pop("item_order")
+        print(items_data)
+        print("the destructed items from the dictinory")
         order = OrderModel.objects.create(**validated_data)
+
         for item_data in items_data:
             ItemModel.objects.create(order=order, **item_data)
         return order
@@ -109,7 +117,29 @@ class ShipmentScheduleSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class SivSerializer(serializers.ModelSerializer):
+class SivItemListSerializer(serializers.ModelSerializer):
     class Meta:
         model = sivModel
         fields = "__all__"
+
+
+class SivSerializer(serializers.ModelSerializer):
+    siv_item = SivItemListSerializer
+
+    class Meta:
+        model = sivModel
+        fields = ["sivDate", "warehouseName", "approve", "siv_item"]
+
+
+class InvoiceItemLineSivSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvoiceLineItemModel
+        fields = "__all__"
+
+
+class InvoiceItemSerializer(serializers.ModelSerializer):
+    invoice_item = InvoiceItemLineSivSerializer(many=True)
+
+    class Meta:
+        model = InvoiceModel
+        fields = ["salesPerson", "subTotal", "Total", "Tax", "date", "invoice_item"]

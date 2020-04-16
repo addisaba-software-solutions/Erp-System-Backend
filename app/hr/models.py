@@ -4,6 +4,7 @@ from model_utils import Choices
 STATUS = Choices("Pending", "Approved")
 PAYMENTOPTION = Choices("VAT", "TOT")
 TERMOFEMPLOYMENTOPTION = Choices("Permament", "Temporary", "Hourly")
+ORDERSTATUS = Choices("Created", "Issued", "Delivered", "Invoiced")
 
 """Employee has one department and one role"""
 
@@ -89,22 +90,6 @@ class claimModel(models.Model):
         return str(self.level)
 
 
-"""Item which have one to many relation with Order and many to one with catagory"""
-
-
-class ItemModel(models.Model):
-    itemId = models.AutoField(primary_key=True, auto_created=True)
-    order = models.ForeignKey(
-        "OrderModel", related_name="item_order", on_delete=models.CASCADE,
-    )
-
-    itemName = models.CharField(max_length=100)
-    quantity = models.IntegerField(null=False)
-
-    def __str__(self):
-        return str(self.itemName)
-
-
 """Order has many items and many company"""
 
 
@@ -129,14 +114,14 @@ class OrderModel(models.Model):
 
 
 class InventoryItemModel(models.Model):
+    InventoryItemId = models.AutoField(primary_key=True, auto_created=True)
     catagory = models.ForeignKey(
         "CatagoryModel",
         related_name="Catagory",
         to_field="catagoryId",
         on_delete=models.CASCADE,
     )
-    inventoryItemId = models.AutoField(primary_key=True, auto_created=True)
-    itemName = models.CharField(max_length=100)
+    itemName = models.CharField(max_length=50, unique=True)
     warehouseName = models.CharField(max_length=100)
     quantity = models.IntegerField(null=False)
     retailPrice = models.FloatField(null=False)
@@ -147,12 +132,31 @@ class InventoryItemModel(models.Model):
         return str(self.itemName + "(  " + str(self.quantity) + " ) ")
 
 
+"""Item which have one to many relation with Order and many to one with catagory"""
+
+
+class ItemModel(models.Model):
+    itemId = models.AutoField(primary_key=True, auto_created=True)
+    order = models.ForeignKey(
+        OrderModel, related_name="item_order", on_delete=models.CASCADE,
+    )
+    InventoryItem = models.ForeignKey(
+        InventoryItemModel, to_field="InventoryItemId", on_delete=models.CASCADE
+    )
+
+    itemName = models.CharField(max_length=100)
+    quantity = models.IntegerField(null=False)
+
+    def __str__(self):
+        return str(self.itemName)
+
+
 """Catagory has many items"""
 
 
 class CatagoryModel(models.Model):
     catagoryId = models.AutoField(primary_key=True, unique=True)
-    catagory = models.CharField(auto_created=True, max_length=100, unique=True)
+    catagory = models.CharField(auto_created=True, max_length=100)
     subCatagory = models.CharField(auto_created=True, max_length=100, unique=True)
 
     def __str__(self):
@@ -163,13 +167,11 @@ class CatagoryModel(models.Model):
 
 
 class StatusModel(models.Model):
-    status = models.CharField(max_length=100)
+    status = models.CharField(max_length=100, choices=ORDERSTATUS, default="")
     order = models.ForeignKey(
         "OrderModel", to_field="orderid", on_delete=models.CASCADE
     )
-    location = models.CharField(max_length=50)
-    description = models.CharField(max_length=100)
-    date = models.DateField(max_length=20)
+    date = models.DateField(max_length=20,)
 
     class Meta:
         unique_together = ("order", "status")
@@ -191,7 +193,7 @@ class ShipmentScheduleModel(models.Model):
     deliveryPerson = models.CharField(max_length=100)
     receivedStatus = models.CharField(max_length=100, verbose_name="Recieved Status")
     conditionOnTrack = models.CharField(
-        max_length=100, verbose_name="Condition on truack"
+        max_length=100, verbose_name="Condition on truck"
     )
     receivedBy = models.CharField(max_length=100, verbose_name="Recieved By")
 
@@ -233,9 +235,15 @@ class InvoiceModel(models.Model):
         return str(self.invoiceId)
 
 
+"""items in the invoice """
+
+
 class InvoiceLineItemModel(models.Model):
     invoice = models.ForeignKey(
-        "InvoiceModel", to_field="invoiceId", on_delete=models.CASCADE
+        "InvoiceModel",
+        to_field="invoiceId",
+        related_name="invoice_item",
+        on_delete=models.CASCADE,
     )
     itemName = models.CharField(max_length=100)
     unitPrice = models.FloatField(max_length=100)
@@ -244,7 +252,7 @@ class InvoiceLineItemModel(models.Model):
     item_discount = models.FloatField(max_length=100)
 
     def __str__(self):
-        return str(self.invoice)
+        return str(self.itemName)
 
 
 """siv models which is related to Order model"""
@@ -252,12 +260,25 @@ class InvoiceLineItemModel(models.Model):
 
 class sivModel(models.Model):
     sivId = models.AutoField(primary_key=True, auto_created=True)
-    itemId = models.IntegerField()
-    itemName = models.CharField(max_length=100)
-    quantity = models.IntegerField()
     sivDate = models.DateField()
     warehouseName = models.CharField(max_length=100)
     approve = models.CharField(max_length=100, choices=STATUS, default=STATUS.Pending)
 
     def __str__(self):
         return str(self.sivId)
+
+
+"""List of items in the siv"""
+
+
+class sivItemListModel(models.Model):
+    sivId = models.AutoField(primary_key=True, auto_created=True)
+    itemId = models.IntegerField()
+    siv = models.ForeignKey(
+        "sivModel", related_name="siv_item", on_delete=models.CASCADE
+    )
+    itemName = models.CharField(max_length=100)
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return str(self.itemName)
