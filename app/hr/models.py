@@ -171,7 +171,7 @@ class StatusModel(models.Model):
     order = models.ForeignKey(
         "OrderModel", to_field="orderid", on_delete=models.CASCADE
     )
-    date = models.DateField(max_length=20,)
+    date = models.DateField(auto_now=True)
 
     class Meta:
         unique_together = ("order", "status")
@@ -260,7 +260,7 @@ class InvoiceLineItemModel(models.Model):
 
 class sivModel(models.Model):
     sivId = models.AutoField(primary_key=True, auto_created=True)
-    sivDate = models.DateField()
+    sivDate = models.DateField(auto_now=True)
     warehouseName = models.CharField(max_length=100)
     approve = models.CharField(max_length=100, choices=STATUS, default=STATUS.Pending)
 

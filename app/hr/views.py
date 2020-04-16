@@ -365,7 +365,7 @@ class OrderListAdd(generics.ListCreateAPIView):
 
     def post(self, request):
 
-        if True:
+        if checkAvailability(request.data):
             serializer = OrderSerializer(data=request.data,)
             print("orders kjhdfskjnhfdkj")
             if serializer.is_valid():
@@ -576,16 +576,13 @@ def issue_siv(sender, instance, **kwargs):
 def updateStatus(sender, instance, **kwargs):
     "update the status to created"
     print("the item model is populated")
-    # warehouseName = OrderModel.objects.values_list("warehouseName", flat=True).get(
-    #     pk=instance.itemName
-    # )
-    # print(warehouseName)
-    # get the warehouse name from the itemname
-    # InventoryItemModel.objects.get.
+    print(instance.orderid)
+    orderstatus = StatusModel(status="Created", order_id=instance.orderid)
+    orderstatus.save()
 
 
 # update the order status to created after a data is inseted to the ordermodel
-post_save.connect(updateStatus, sender=ItemModel)
+post_save.connect(updateStatus, sender=OrderModel)
 
 
 def issue_invoice(sender, instance, **kwargs):
@@ -602,12 +599,11 @@ def checkAvailability(data):
     items = data["item_order"]
     print("the tegern")
     print(items)
-
-    for i in range(len(items)):
+    for item in items:
         print("the iten name is")
-        item_name = items[i]["itemName"]
+        item_name = item["itemName"]
         print(item_name)
-        item_qty = items[i]["quantity"]
+        item_qty = item["quantity"]
         print(item_qty)
 
         # availableQuantity = InventoryItemModel.objects.values_list(
@@ -615,13 +611,11 @@ def checkAvailability(data):
         # ).get(
         #     pk="computer"
         # )  # just for test pk should be replaced with item_name
-        print(availableQuantity)
+        # print(availableQuantity)
 
-        if availableQuantity <= item_qty:
-            newItemQuantity = int(item_qty) - int(availableQuantity)
-            item = InventoryItemModel.objects.get(pk=item_name)
-            item.quantity = str(newItemQuantity)
-            item.save()
-            return True
-        else:
-            return False
+        # if availableQuantity <= item_qty:
+        #     newItemQuantity = int(item_qty) - int(availableQuantity)
+        #     item = InventoryItemModel.objects.get(pk=item_name)
+        #     item.quantity = str(newItemQuantity)
+        #     item.save()
+    return True
