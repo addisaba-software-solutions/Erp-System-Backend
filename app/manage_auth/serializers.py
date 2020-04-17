@@ -5,13 +5,15 @@ from .models import User
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from rest_framework import serializers, exceptions
 from django.core import serializers as jsonParse
-from rest_framework import serializers, status
 from rest_framework.validators import UniqueValidator
-from hr.serializers import *
+from hr.serializers import (
+    ClaimSerializer,
+    RoleSerializer,
+    DepartmentSerializer,
+)
 
-from hr.models import *
+from hr.models import claimModel, RoleModel
 
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -20,7 +22,6 @@ from rest_framework.status import (
     HTTP_409_CONFLICT,
 )
 from .models import UserManager, EmployeModel
-from utilities.token import *
 
 
 class UserSerializer(serializers.ModelSerializer):

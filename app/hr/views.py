@@ -1,11 +1,45 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
-from .models import *
-from .serializers import *
+from .models import (
+    claimModel,
+    RoleModel,
+    EmployeModel,
+    DepartmentModel,
+    CatagoryModel,
+    InventoryItemModel,
+    CompanyModel,
+    ItemModel,
+    OrderModel,
+    StatusModel,
+    ShipmentScheduleModel,
+    sivItemListModel,
+    sivModel,
+    InvoiceLineItemModel,
+    InvoiceModel,
+)
+from .serializers import (
+    EmployeSerializer,
+    DepartmentSerializer,
+    EmployeReadSerializer,
+    RoleSerializer,
+    ClaimSerializer,
+    InventoryItemModelSerializer,
+    ItemSerializer,
+    CatagorySerializer,
+    OrderSerializer,
+    SivItemListSerializer,
+    CompanySerializer,
+    StatusSerializer,
+    ShipmentScheduleSerializer,
+    SivSerializer,
+    InvoiceItemSerializer,
+    InvoiceItemLineSerializer,
+)
+
 from rest_framework.views import APIView
 from utilities.token import get_token, get_role
 from manage_auth.permission import HrPermissionsAll
-
+from django.db.models.signals import post_save
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -15,11 +49,6 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
 )
-
-from utilities.token import get_token, get_role
-from django.db.models.signals import post_save
-from rest_framework.response import Response
-from rest_framework import status
 
 
 class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
@@ -54,22 +83,7 @@ class EmployeListAdd(generics.ListCreateAPIView):
         return serializer_class
 
     def post(self, request):
-
         serializer = EmployeSerializer(data=request.data,)
-
-    def get_serializer_class(self):
-        if self.request.method == "POST":
-            serializer_class = EmployeSerializer
-
-        elif self.request.method == "GET":
-            serializer_class = EmployeReadSerializer
-
-        return serializer_class
-
-    def post(self, request):
-
-        serializer = EmployeSerializer(data=request.data,)
-
         if serializer.is_valid():
             department = DepartmentModel.objects.get(
                 departmentId=request.data.get("department")
@@ -655,26 +669,6 @@ def issue_siv_invoice(sender, instance, **kwargs):
         #     print(item.itemName)
         #     print(item.quantity)
 
-    # itemId = OrderModel.objects.values_list("item", flat=True).get(pk=instance.orderId)
-    # itemName = ItemModel.objects.values_list("itemName", flat=True).get(pk=itemId)
-    # warehouseName = ItemModel.objects.values_list("warehouseName", flat=True).get(
-    #     pk=itemId
-    # )
-    # orderQuantity = OrderModel.objects.values_list("orderQuantity", flat=True).get(
-    #     pk=instance.orderId
-    # )
-    # orderDate = OrderModel.objects.values_list("orderDate", flat=True).get(
-    #     pk=instance.orderId
-    # )
-    # siv = sivModel(
-    #     itemId=itemId,
-    #     itemName=itemName,
-    #     quantity=orderQuantity,
-    #     sivDate=orderDate,
-    #     warehouseName=warehouseName,
-    # )
-    # siv.save()
-
 
 def updateStatus(sender, instance, **kwargs):
     # "update the status to created"
@@ -686,12 +680,6 @@ def updateStatus(sender, instance, **kwargs):
 
 # update the order status to created after a data is inseted to the ordermodel
 post_save.connect(updateStatus, sender=OrderModel)
-
-
-# def issue_invoice(sender, instance, **kwargs):
-#     print("the item status :" + str(instance.approve))
-#     if instance.approve == "Approved":
-#         return True
 
 
 # signal to track if siv is approved and invoice should be generated

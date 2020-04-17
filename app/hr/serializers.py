@@ -1,5 +1,21 @@
 from rest_framework import serializers
-from .models import *
+from .models import (
+    claimModel,
+    RoleModel,
+    EmployeModel,
+    DepartmentModel,
+    CatagoryModel,
+    InventoryItemModel,
+    CompanyModel,
+    ItemModel,
+    OrderModel,
+    StatusModel,
+    ShipmentScheduleModel,
+    sivItemListModel,
+    sivModel,
+    InvoiceLineItemModel,
+    InvoiceModel,
+)
 
 
 class ClaimSerializer(serializers.ModelSerializer):
@@ -163,7 +179,7 @@ class SivItemListSerializer(serializers.ModelSerializer):
 
 
 class SivSerializer(serializers.ModelSerializer):
-    siv_item = SivItemListSerializer(many=True)
+    siv_item = SivItemListSerializer(many=True,)
 
     class Meta:
         model = sivModel
@@ -177,7 +193,7 @@ class InvoiceItemLineSerializer(serializers.ModelSerializer):
 
 
 class InvoiceItemSerializer(serializers.ModelSerializer):
-    invoice_item = InvoiceItemLineSerializer(many=True)
+    invoice_item = InvoiceItemLineSerializer(many=True,)
 
     class Meta:
         model = InvoiceModel
