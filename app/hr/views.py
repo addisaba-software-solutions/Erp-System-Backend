@@ -40,25 +40,22 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
 
 
 class EmployeListAdd(generics.ListCreateAPIView):
-        queryset = EmployeModel.objects.all()
-        lookup_field = 'employeId'
-        # permission_classes=[HrPermissionsAll]
+    queryset = EmployeModel.objects.all()
+    lookup_field = "employeId"
+    # permission_classes=[HrPermissionsAll]
 
-        def get_serializer_class(self):
-                if self.request.method == 'POST':
-                    serializer_class=EmployeSerializer
-                    
-                elif self.request.method == 'GET':
-                    serializer_class = EmployeReadSerializer      
-        
-                return serializer_class
-    
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            serializer_class = EmployeSerializer
 
-        def post(self,request):
-   
-            serializer= EmployeSerializer(
-                data=request.data,
-            ) 
+        elif self.request.method == "GET":
+            serializer_class = EmployeReadSerializer
+
+        return serializer_class
+
+    def post(self, request):
+
+        serializer = EmployeSerializer(data=request.data,)
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -128,15 +125,12 @@ class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
 
 class DepartmentListAdd(generics.ListCreateAPIView):
     serializer_class = DepartmentSerializer
-    queryset= DepartmentModel.objects.all()
-    lookup_field='departmentId'
+    queryset = DepartmentModel.objects.all()
+    lookup_field = "departmentId"
     # permission_classes=[HrPermissionsAll]
-   
-   
-    def post(self,request):
-        serializer= DepartmentSerializer(
-            data=request.data,
-        ) 
+
+    def post(self, request):
+        serializer = DepartmentSerializer(data=request.data,)
 
         if serializer.is_valid():
             # role=Role.objects.get(roleId=request.data.get('role'))
@@ -349,21 +343,21 @@ class CatagoryListAdd(generics.ListCreateAPIView):
 class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
     queryset = OrderModel.objects.all()
-    lookup_field = "orderid"
+    lookup_field = "orderNumber"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, orderId=None):
+    def get(self, request, orderNumber=None):
 
-        return self.retrieve(request, orderid)
+        return self.retrieve(request, orderNumber)
 
-    def put(self, request, orderId=None):
+    def put(self, request, orderNumber=None):
 
-        return self.update(request, orderid)
+        return self.update(request, orderNumber)
 
-    def delete(self, request, orderId=None):
+    def delete(self, request, orderNumber=None):
 
-        return self.destroy(request, orderid)
+        return self.destroy(request, orderNumber)
 
 
 """item order which have list of items in one order"""
@@ -372,7 +366,7 @@ class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
 class OrderListAdd(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     queryset = OrderModel.objects.all()
-    lookup_field = "orderid"
+    lookup_field = "orderNumber"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -384,10 +378,34 @@ class OrderListAdd(generics.ListCreateAPIView):
 
         if checkAvailability(request.data):
             serializer = OrderSerializer(data=request.data,)
+            print(serializer)
             print("orders kjhdfskjnhfdkj")
-            if serializer.is_valid():
+            if serializer.is_valid(raise_exception=True):
                 print("in the validslkafj")
-                serializer.save()
+                order = serializer.save()
+                print("serialiserksjgknhekdfjneak")
+                items = ItemModel.objects.filter(order_id=order)
+                print("the item is  " + str(items))
+                warehouseName = ""
+                for item in items:
+                    itemId = item.InventoryItem_id
+                    warehouseName = InventoryItemModel.objects.values_list(
+                        "warehouseName", flat=True
+                    ).get(pk=itemId)
+                siv = sivModel(warehouseName=warehouseName)
+                siv.save()
+                for item in items:
+                    itemName = item.itemName
+                    itemQuantity = item.quantity
+                    item = {"itemName": itemName, "quantity": itemQuantity}
+                    serializer = SivItemListSerializer(data=item)
+                    if serializer.is_valid(raise_exception=True):
+                        sivItemListModel.objects.create(
+                            siv=siv, **serializer.validated_data
+                        )
+
+                    print("the item name is" + str(itemName) + " " + str(itemQuantity))
+
                 return Response({"order success"}, status=HTTP_201_CREATED)
         else:
             return Response(
@@ -477,15 +495,15 @@ class ShipmentScheduleRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, shipmentId=None):
 
-        return self.retrieve(request, id)
+        return self.retrieve(request, shipmentId)
 
     def put(self, request, shipmentId=None):
 
-        return self.update(request, id)
+        return self.update(request, shipmentId)
 
     def delete(self, request, shipmentId=None):
 
-        return self.destroy(request, id)
+        return self.destroy(request, shipmentId)
 
 
 class ShipmentScheduleListAdd(generics.ListCreateAPIView):
@@ -525,12 +543,16 @@ class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, sivId=None):
 
-        return self.retrieve(request, id)
+        return self.retrieve(request, sivId)
+
+    def put(self, request, sivId=None):
+
+        return self.partial_update(request, sivId)
 
     # used to delete siv might be deleted depending on the requirements
     def delete(self, request, sivId=None):
 
-        return self.destroy(request, id)
+        return self.destroy(request, sivId)
 
 
 """the end point to get invoice for order"""
@@ -557,59 +579,123 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, invoiceId=None):
 
-        return self.retrieve(request, id)
+        return self.retrieve(request, invoiceId)
 
     # used to delete siv might be deleted depending on the requirements
-    def delete(self, request, sivId=None):
+    def delete(self, request, invoiceId=None):
 
-        return self.destroy(request, id)
+        return self.destroy(request, invoiceId)
 
 
 # called after a new order is inserted to database
 
 
-def issue_siv(sender, instance, **kwargs):
-    itemId = OrderModel.objects.values_list("item", flat=True).get(pk=instance.orderId)
-    itemName = ItemModel.objects.values_list("itemName", flat=True).get(pk=itemId)
-    warehouseName = ItemModel.objects.values_list("warehouseName", flat=True).get(
-        pk=itemId
-    )
-    orderQuantity = OrderModel.objects.values_list("orderQuantity", flat=True).get(
-        pk=instance.orderId
-    )
-    orderDate = OrderModel.objects.values_list("orderDate", flat=True).get(
-        pk=instance.orderId
-    )
-    siv = sivModel(
-        itemId=itemId,
-        itemName=itemName,
-        quantity=orderQuantity,
-        sivDate=orderDate,
-        warehouseName=warehouseName,
-    )
-    siv.save()
+def issue_siv_invoice(sender, instance, **kwargs):
+    print("the the status is  ")
+    if instance.status == "Created":
+        print("the status is creaded generate siv")
+        print(instance.order)
+        warehouseName = "kazanchis"
+        items = ItemModel.objects.filter(order_id=25)
+        print("the items in the order are")
+        # salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
+        #     pk=instance.order
+        # )
+        invoice = InvoiceModel(Total=100, subTotal=100, Tax=10, salesPerson="kidus")
+        invoice.save()
+        subTotal = 0
+        tax = 0
+        total = 0
+        for item in items:
+
+            print(item.InventoryItem_id)
+            print(item.quantity)
+            itemName = item.itemName  # the item name
+            itemQuantity = item.quantity  # the item quantity
+            itemId = item.InventoryItem_id  # the item id in the inventory
+            unitPrice = InventoryItemModel.objects.values_list(
+                "retailPrice", flat=True
+            ).get(pk=itemId)
+            invoicedata = {
+                "itemName": itemName,
+                "quantity": itemQuantity,
+                "unitPrice": unitPrice,
+            }
+
+            serializer = InvoiceItemLineSerializer(data=invoicedata)
+            print("the serializer issssssssss")
+            print(serializer)
+
+            if serializer.is_valid(raise_exception=True):
+                InvoiceLineItemModel.objects.create(
+                    invoice=invoice, **serializer.validated_data
+                )
+            print("the item price is")
+            print(unitPrice)
+            subTotal = subTotal + unitPrice
+            print("the total amount is")
+            print(subTotal)
+        tax = subTotal * 0.15
+        print("the tax is ssssss")
+        print(tax)
+        total = subTotal + tax
+        print("the sub total isssss")
+        print(total)
+
+        # siv = sivModel(warehouseName=warehouseName)
+        # siv.save()
+    if instance.status == "Delivered":
+        print("the invoice should be generated now")
+        salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
+            pk=instance.order
+        )
+        print(salesPerson)
+        items = ItemModel.objects.filter(order_id=instance.order)
+        # for item in items:
+        #     print(item.itemName)
+        #     print(item.quantity)
+
+    # itemId = OrderModel.objects.values_list("item", flat=True).get(pk=instance.orderId)
+    # itemName = ItemModel.objects.values_list("itemName", flat=True).get(pk=itemId)
+    # warehouseName = ItemModel.objects.values_list("warehouseName", flat=True).get(
+    #     pk=itemId
+    # )
+    # orderQuantity = OrderModel.objects.values_list("orderQuantity", flat=True).get(
+    #     pk=instance.orderId
+    # )
+    # orderDate = OrderModel.objects.values_list("orderDate", flat=True).get(
+    #     pk=instance.orderId
+    # )
+    # siv = sivModel(
+    #     itemId=itemId,
+    #     itemName=itemName,
+    #     quantity=orderQuantity,
+    #     sivDate=orderDate,
+    #     warehouseName=warehouseName,
+    # )
+    # siv.save()
 
 
 def updateStatus(sender, instance, **kwargs):
-    "update the status to created"
+    # "update the status to created"
     print("the item model is populated")
-    print(instance.orderid)
-    orderstatus = StatusModel(status="Created", order_id=instance.orderid)
-    orderstatus.save()
+    print(instance)
+    status = StatusModel(status="Created", order_id=instance.orderNumber)
+    status.save()
 
 
 # update the order status to created after a data is inseted to the ordermodel
 post_save.connect(updateStatus, sender=OrderModel)
 
 
-def issue_invoice(sender, instance, **kwargs):
-    print("the item status :" + str(instance.approve))
-    if instance.approve == "Approved":
-        return True
+# def issue_invoice(sender, instance, **kwargs):
+#     print("the item status :" + str(instance.approve))
+#     if instance.approve == "Approved":
+#         return True
 
 
 # signal to track if siv is approved and invoice should be generated
-post_save.connect(issue_invoice, sender=sivModel)
+post_save.connect(issue_siv_invoice, sender=StatusModel)
 
 # checkes items availability and update after order
 def checkAvailability(data):
@@ -631,7 +717,7 @@ def checkAvailability(data):
         # print(availableQuantity)
 
         # if availableQuantity <= item_qty:
-        #     newItemQuantity = int(item_qty) - int(availableQuantity)
+        #     newQ = int(item_qty) - int(availableQuantity)
         #     item = InventoryItemModel.objects.get(pk=item_name)
         #     item.quantity = str(newItemQuantity)
         #     item.save()

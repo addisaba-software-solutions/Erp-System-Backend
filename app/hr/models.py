@@ -94,8 +94,8 @@ class claimModel(models.Model):
 
 
 class OrderModel(models.Model):
-    orderid = models.AutoField(primary_key=True, unique=True)
-    orderNumber = models.IntegerField()
+    # orderid = models.AutoField(primary_key=True, unique=True)
+    orderNumber = models.IntegerField(primary_key=True, unique=True)
     company = models.ForeignKey(
         "CompanyModel", to_field="companyId", on_delete=models.CASCADE
     )
@@ -169,7 +169,7 @@ class CatagoryModel(models.Model):
 class StatusModel(models.Model):
     status = models.CharField(max_length=100, choices=ORDERSTATUS, default="")
     order = models.ForeignKey(
-        "OrderModel", to_field="orderid", on_delete=models.CASCADE
+        "OrderModel", to_field="orderNumber", on_delete=models.CASCADE
     )
     date = models.DateField(auto_now=True)
 
@@ -229,7 +229,7 @@ class InvoiceModel(models.Model):
     subTotal = models.FloatField(verbose_name="Sub total")
     Total = models.FloatField()
     Tax = models.FloatField()
-    date = models.DateField(max_length=20)
+    date = models.DateField(max_length=20, auto_now=True)
 
     def __str__(self):
         return str(self.invoiceId)
@@ -248,8 +248,7 @@ class InvoiceLineItemModel(models.Model):
     itemName = models.CharField(max_length=100)
     unitPrice = models.FloatField(max_length=100)
     quantity = models.IntegerField()
-    ItemId = models.IntegerField()
-    item_discount = models.FloatField(max_length=100)
+    # item_discount = models.FloatField(max_length=100)
 
     def __str__(self):
         return str(self.itemName)
@@ -273,7 +272,6 @@ class sivModel(models.Model):
 
 class sivItemListModel(models.Model):
     sivId = models.AutoField(primary_key=True, auto_created=True)
-    itemId = models.IntegerField()
     siv = models.ForeignKey(
         "sivModel", related_name="siv_item", on_delete=models.CASCADE
     )
