@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
     employe = serializers.CharField()
     department = serializers.CharField()
     claim = serializers.CharField()
-    role = serializers.CharField()
+    roles = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate_username(self, val):
@@ -63,13 +63,13 @@ class UserSerializer(serializers.ModelSerializer):
             )
         return val
 
-    def validate_department(self, val):
-        """
-        Validates user data.
-        """
-        if not User.objects.filter(department=val).exists():
-            raise serializers.ValidationError("This department not exist")
-        return val
+    # def validate_department(self, val):
+    #     """
+    #     Validates user data.
+    #     """
+    #     if not User.objects.filter(department=val).exists():
+    #         raise serializers.ValidationError("This department not exist")
+    #     return val
 
     def validate_claim(self, val):
         """
@@ -79,7 +79,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This claim not exist")
         return val
 
-    def validate_role(self, val):
+    def validate_roles(self, val):
         """
         Validates user data.
         """
@@ -153,4 +153,3 @@ class LoginUserSerializer(serializers.ModelSerializer):
             },
             status=200,
         )
-
