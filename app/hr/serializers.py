@@ -41,6 +41,45 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class EmployeSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+    department = serializers.CharField()
+    level = serializers.CharField()
+    roles = serializers.CharField()
+
+    def validate_email(self, val):
+
+        """
+        Validates user data.
+        """
+        if EmployeModel.objects.filter(email=val).exists():
+            raise serializers.ValidationError("This email already exists")
+
+        return val
+
+    def validate_department(self, val):
+        """
+        Validates user data.
+        """
+        if not DepartmentModel.objects.filter(departmentId=val).exists():
+            raise serializers.ValidationError("This department not exist")
+        return val
+
+    def validate_level(self, val):
+        """
+        Validates user data.
+        """
+        if not claimModel.objects.filter(levelId=val).exists():
+            raise serializers.ValidationError("This claim not exist")
+        return val
+
+    def validate_roles(self, val):
+        """
+        Validates user data.
+        """
+        if not RoleModel.objects.filter(roleId=val).exists():
+            raise serializers.ValidationError("This role not exist")
+        return val
+
     class Meta:
         model = EmployeModel
         fields = "__all__"

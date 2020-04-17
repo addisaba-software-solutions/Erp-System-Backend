@@ -40,11 +40,25 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
 
 
 class EmployeListAdd(generics.ListCreateAPIView):
-    # serializer_class = EmployeSerializer
-    queryset = EmployeModel.objects.all()
-    lookup_field = "employeId"
-    # authentication_classes=[TokenAuthentication]
-    # permission_classes = [HrPermissionsAll]
+        queryset = EmployeModel.objects.all()
+        lookup_field = 'employeId'
+        # permission_classes=[HrPermissionsAll]
+
+        def get_serializer_class(self):
+                if self.request.method == 'POST':
+                    serializer_class=EmployeSerializer
+                    
+                elif self.request.method == 'GET':
+                    serializer_class = EmployeReadSerializer      
+        
+                return serializer_class
+    
+
+        def post(self,request):
+   
+            serializer= EmployeSerializer(
+                data=request.data,
+            ) 
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -114,12 +128,15 @@ class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
 
 class DepartmentListAdd(generics.ListCreateAPIView):
     serializer_class = DepartmentSerializer
-    queryset = DepartmentModel.objects.all()
-    lookup_field = "departmentId"
+    queryset= DepartmentModel.objects.all()
+    lookup_field='departmentId'
     # permission_classes=[HrPermissionsAll]
-
-    def post(self, request):
-        serializer = DepartmentSerializer(data=request.data,)
+   
+   
+    def post(self,request):
+        serializer= DepartmentSerializer(
+            data=request.data,
+        ) 
 
         if serializer.is_valid():
             # role=Role.objects.get(roleId=request.data.get('role'))

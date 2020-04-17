@@ -2,7 +2,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from manage_auth.models import User
-
+from django.core.exceptions import ValidationError
 
 def get_token(self,request):
     PREFIX = 'Bearer'
@@ -16,12 +16,14 @@ def get_token(self,request):
                 bearer, _, token = header.partition(' ')
                 if bearer != PREFIX:
                     return False
+                elif not token: 
+                    return False   
                 else:
-                 
-                 return token
+                    user=Token.objects.get(key=token)
+                    return token
 
-        except expression as identifier:
-             return False
+        except:
+             return  False
                 
 
 
