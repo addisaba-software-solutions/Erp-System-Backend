@@ -604,29 +604,44 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
 # called after a new order is inserted to database
 
 
-def issue_siv_invoice(sender, instance, **kwargs):
-    print("the the status is  ")
-    if instance.status == "Created":
-        print("the status is creaded generate siv")
-        print(instance.order)
-        warehouseName = "kazanchis"
-        items = ItemModel.objects.filter(order_id=25)
-        print("the items in the order are")
-        # salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
-        #     pk=instance.order
-        # )
-        invoice = InvoiceModel(Total=100, subTotal=100, Tax=10, salesPerson="kidus")
-        invoice.save()
+def issue_invoice(sender, instance, **kwargs):
+    if instance.status == "Created": # Change staus with Delivered for correct invoice generation
+        print(instance.order_id)
+        items = ItemModel.objects.filter(order_id=25) # Change insert the order id
+        salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
+            pk=instance.order_id
+        )
+        invoice_dict = {}
+        i = 0
         subTotal = 0
-        tax = 0
-        total = 0
         for item in items:
+            invoice_item_dict = {}
+            invoice_item_dict['itemName'] = item.itemName
+            invoice_item_dict['quantity'] = item.quantity
+            itemId = item.InventoryItem_id
+            unitPrice = InventoryItemModel.objects.values_list(
+                "retailPrice", flat=True
+            ).get(pk=itemId)
+            invoice_item_dict['unitPrice'] = unitPrice
+            invoice_dict[i] = invoice_item_dict
+            i = i + 1
 
-            print(item.InventoryItem_id)
-            print(item.quantity)
-            itemName = item.itemName  # the item name
-            itemQuantity = item.quantity  # the item quantity
-            itemId = item.InventoryItem_id  # the item id in the inventory
+        for i in invoice_dict:
+            unitPrice = invoice_dict[i]['unitPrice']
+            subTotal = subTotal + unitPrice
+        print(subTotal)
+        tax = subTotal * 0.15
+        print("the tax is ssssss")
+        print(tax)
+        total = subTotal + tax
+        print("the total isssss")
+        print(total)
+        invoice = InvoiceModel(Total=total, subTotal=subTotal, Tax=tax, salesPerson=salesPerson)
+        invoice.save()
+        for item in items:
+            itemName = item.itemName
+            itemQuantity = item.quantity
+            itemId = item.InventoryItem_id
             unitPrice = InventoryItemModel.objects.values_list(
                 "retailPrice", flat=True
             ).get(pk=itemId)
@@ -635,55 +650,24 @@ def issue_siv_invoice(sender, instance, **kwargs):
                 "quantity": itemQuantity,
                 "unitPrice": unitPrice,
             }
-
             serializer = InvoiceItemLineSerializer(data=invoicedata)
-            print("the serializer issssssssss")
-            print(serializer)
-
             if serializer.is_valid(raise_exception=True):
                 InvoiceLineItemModel.objects.create(
                     invoice=invoice, **serializer.validated_data
                 )
-            print("the item price is")
-            print(unitPrice)
-            subTotal = subTotal + unitPrice
-            print("the total amount is")
-            print(subTotal)
-        tax = subTotal * 0.15
-        print("the tax is ssssss")
-        print(tax)
-        total = subTotal + tax
-        print("the sub total isssss")
-        print(total)
-
-        # siv = sivModel(warehouseName=warehouseName)
-        # siv.save()
-    if instance.status == "Delivered":
-        print("the invoice should be generated now")
-        salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
-            pk=instance.order
-        )
-        print(salesPerson)
-        items = ItemModel.objects.filter(order_id=instance.order)
-        # for item in items:
-        #     print(item.itemName)
-        #     print(item.quantity)
 
 
 def updateStatus(sender, instance, **kwargs):
-    # "update the status to created"
-    print("the item model is populated")
-    print(instance)
+    """update the status to created"""
     status = StatusModel(status="Created", order_id=instance.orderNumber)
     status.save()
-
 
 # update the order status to created after a data is inseted to the ordermodel
 post_save.connect(updateStatus, sender=OrderModel)
 
 
 # signal to track if siv is approved and invoice should be generated
-post_save.connect(issue_siv_invoice, sender=StatusModel)
+post_save.connect(issue_invoice, sender=StatusModel)
 
 # checkes items availability and update after order
 def checkAvailability(data):
