@@ -142,10 +142,7 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        print("the item is nokskfhkjdfshk")
         items_data = validated_data.pop("item_order")
-        print(items_data)
-        print("the destructed items from the dictinory")
         order = OrderModel.objects.create(**validated_data)
 
         for item_data in items_data:

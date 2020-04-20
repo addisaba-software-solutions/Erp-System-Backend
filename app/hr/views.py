@@ -389,17 +389,15 @@ class OrderListAdd(generics.ListCreateAPIView):
         return self.list(request)
 
     def post(self, request):
-
-        if checkAvailability(request.data):
+        # Call checkAvailability when the request arrives
+        available = checkAvailability(request.data)
+        print("the value of availabe is")
+        print(available)
+        if available[0]:
             serializer = OrderSerializer(data=request.data,)
-            print(serializer)
-            print("orders kjhdfskjnhfdkj")
             if serializer.is_valid(raise_exception=True):
-                print("in the validslkafj")
                 order = serializer.save()
-                print("serialiserksjgknhekdfjneak")
                 items = ItemModel.objects.filter(order_id=order)
-                print("the item is  " + str(items))
                 warehouseName = ""
                 for item in items:
                     itemId = item.InventoryItem_id
@@ -417,13 +415,31 @@ class OrderListAdd(generics.ListCreateAPIView):
                         sivItemListModel.objects.create(
                             siv=siv, **serializer.validated_data
                         )
+                for item in items:
+                    itemName = item.itemName
+                    for itemQty in available[1]:
+                        print("the item quantitiy is")
+                        print(itemQty)
+                        print(itemName)
+                        if itemName == itemQty["itemName"]:
+                            inventoryItem = InventoryItemModel.objects.get(
+                                itemName=itemName
+                            )
+                            inventoryItem.quantity = itemQty["quantity"]
+                            inventoryItem.save()
 
-                    print("the item name is" + str(itemName) + " " + str(itemQuantity))
+                    # for itemName in available[1]
+                # item = InventoryItemModel.objects.get(pk=orderedItemName)
+                # item.quantity = str(newItemQuantity)
+                # item.save()
 
                 return Response({"order success"}, status=HTTP_201_CREATED)
         else:
             return Response(
-                "requested item amount is not available at the moment",
+                {
+                    "Error": "requested for item is not available at the moment",
+                    "item": available[1],
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )
 
@@ -605,9 +621,10 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
 
 
 def issue_invoice(sender, instance, **kwargs):
-    if instance.status == "Created": # Change staus with Delivered for correct invoice generation
-        print(instance.order_id)
-        items = ItemModel.objects.filter(order_id=25) # Change insert the order id
+    if (
+        instance.status == "Created"
+    ):  # Change staus with Delivered for correct invoice generation
+        items = ItemModel.objects.filter(order_id=5)  # Change insert the order id
         salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
             pk=instance.order_id
         )
@@ -616,27 +633,24 @@ def issue_invoice(sender, instance, **kwargs):
         subTotal = 0
         for item in items:
             invoice_item_dict = {}
-            invoice_item_dict['itemName'] = item.itemName
-            invoice_item_dict['quantity'] = item.quantity
+            invoice_item_dict["itemName"] = item.itemName
+            invoice_item_dict["quantity"] = item.quantity
             itemId = item.InventoryItem_id
             unitPrice = InventoryItemModel.objects.values_list(
                 "retailPrice", flat=True
             ).get(pk=itemId)
-            invoice_item_dict['unitPrice'] = unitPrice
+            invoice_item_dict["unitPrice"] = unitPrice
             invoice_dict[i] = invoice_item_dict
             i = i + 1
 
         for i in invoice_dict:
-            unitPrice = invoice_dict[i]['unitPrice']
+            unitPrice = invoice_dict[i]["unitPrice"]
             subTotal = subTotal + unitPrice
-        print(subTotal)
         tax = subTotal * 0.15
-        print("the tax is ssssss")
-        print(tax)
         total = subTotal + tax
-        print("the total isssss")
-        print(total)
-        invoice = InvoiceModel(Total=total, subTotal=subTotal, Tax=tax, salesPerson=salesPerson)
+        invoice = InvoiceModel(
+            Total=total, subTotal=subTotal, Tax=tax, salesPerson=salesPerson
+        )
         invoice.save()
         for item in items:
             itemName = item.itemName
@@ -662,6 +676,7 @@ def updateStatus(sender, instance, **kwargs):
     status = StatusModel(status="Created", order_id=instance.orderNumber)
     status.save()
 
+
 # update the order status to created after a data is inseted to the ordermodel
 post_save.connect(updateStatus, sender=OrderModel)
 
@@ -669,28 +684,31 @@ post_save.connect(updateStatus, sender=OrderModel)
 # signal to track if siv is approved and invoice should be generated
 post_save.connect(issue_invoice, sender=StatusModel)
 
-# checkes items availability and update after order
+# checkes items availability
 def checkAvailability(data):
     items = data["item_order"]
-    print("the tegern")
-    print(items)
+    updatedItemQuantity = []
+
     for item in items:
-        print("the iten name is")
-        item_name = item["itemName"]
-        print(item_name)
-        item_qty = item["quantity"]
-        print(item_qty)
+        orderedItemName = item["itemName"]
+        orderedItemQuantity = item["quantity"]
+        inventoryItemId = item["InventoryItem"]
+        availableQuantity = InventoryItemModel.objects.values_list(
+            "quantity", flat=True
+        ).get(pk=inventoryItemId)
+        print(availableQuantity)
 
-        # availableQuantity = InventoryItemModel.objects.values_list(
-        #     "quantity", flat=True
-        # ).get(
-        #     pk="computer"
-        # )  # just for test pk should be replaced with item_name
-        # print(availableQuantity)
+        if availableQuantity <= orderedItemQuantity:
+            # this should return the item name and the available item quantity for this itemname
+            return (
+                False,
+                {"itemName": orderedItemName, "available": availableQuantity},
+            )
 
-        # if availableQuantity <= item_qty:
-        #     newQ = int(item_qty) - int(availableQuantity)
-        #     item = InventoryItemModel.objects.get(pk=item_name)
-        #     item.quantity = str(newItemQuantity)
-        #     item.save()
-    return True
+        newItemQuantity = int(availableQuantity) - int(orderedItemQuantity)
+        updatedQuantity = {"itemName": orderedItemName, "quantity": newItemQuantity}
+        updatedQuantity_copy = updatedQuantity.copy()
+        updatedItemQuantity.append(updatedQuantity_copy)
+    print("the new items quantity is ")
+    print(updatedItemQuantity)
+    return (True, updatedItemQuantity)
