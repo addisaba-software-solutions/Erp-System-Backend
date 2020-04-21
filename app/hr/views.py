@@ -253,17 +253,17 @@ class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, itemId=None):
+    def get(self, request, inventoryItemId=None):
 
-        return self.retrieve(request, itemId)
+        return self.retrieve(request, inventoryItemId)
 
-    def put(self, request, itemId=None):
+    def put(self, request, inventoryItemId=None):
 
-        return self.update(request, itemId)
+        return self.update(request, inventoryItemId)
 
-    def delete(self, request, itemId=None):
+    def delete(self, request, inventoryItemId=None):
 
-        return self.destroy(request, itemId)
+        return self.destroy(request, inventoryItemId)
 
 
 class ItemListAdd(generics.ListCreateAPIView):
@@ -285,27 +285,27 @@ class ItemListAdd(generics.ListCreateAPIView):
 class OrderItemRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ItemSerializer
     queryset = ItemModel.objects.all()
-    lookup_field = "itemId"
+    lookup_field = "itemName"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, itemId=None):
+    def get(self, request, itemName=None):
 
-        return self.retrieve(request, itemId)
+        return self.retrieve(request, itemName)
 
-    def put(self, request, itemId=None):
+    def put(self, request, itemName=None):
 
-        return self.update(request, itemId)
+        return self.update(request, itemName)
 
-    def delete(self, request, itemId=None):
+    def delete(self, request, itemName=None):
 
-        return self.destroy(request, itemId)
+        return self.destroy(request, itemName)
 
 
 class OrderItemListAdd(generics.ListCreateAPIView):
     serializer_class = ItemSerializer
     queryset = ItemModel.objects.all()
-    lookup_field = "itemId"
+    lookup_field = "itemName"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -404,12 +404,16 @@ class OrderListAdd(generics.ListCreateAPIView):
                     warehouseName = InventoryItemModel.objects.values_list(
                         "warehouseName", flat=True
                     ).get(pk=itemId)
-                siv = sivModel(warehouseName=warehouseName)
+                siv = sivModel(order_id=order.orderNumber, warehouseName=warehouseName)
                 siv.save()
                 for item in items:
                     itemName = item.itemName
                     itemQuantity = item.quantity
-                    item = {"itemName": itemName, "quantity": itemQuantity}
+                    item = {
+                        "order_id": order,
+                        "itemName": itemName,
+                        "quantity": itemQuantity,
+                    }
                     serializer = SivItemListSerializer(data=item)
                     if serializer.is_valid(raise_exception=True):
                         sivItemListModel.objects.create(
@@ -427,11 +431,6 @@ class OrderListAdd(generics.ListCreateAPIView):
                             )
                             inventoryItem.quantity = itemQty["quantity"]
                             inventoryItem.save()
-
-                    # for itemName in available[1]
-                # item = InventoryItemModel.objects.get(pk=orderedItemName)
-                # item.quantity = str(newItemQuantity)
-                # item.save()
 
                 return Response({"order success"}, status=HTTP_201_CREATED)
         else:
@@ -576,6 +575,12 @@ class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
         return self.retrieve(request, sivId)
 
     def put(self, request, sivId=None):
+        siv = sivModel.objects.get(sivId=sivId)
+        if request.data["sivStatus"] == "Approved":
+            status = StatusModel(status="Issued", order_id=siv.order_id)
+            status.save()
+
+            pass
 
         return self.partial_update(request, sivId)
 
@@ -617,9 +622,6 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
         return self.destroy(request, invoiceId)
 
 
-# called after a new order is inserted to database
-
-
 def issue_invoice(sender, instance, **kwargs):
     if (
         instance.status == "Created"
@@ -649,7 +651,11 @@ def issue_invoice(sender, instance, **kwargs):
         tax = subTotal * 0.15
         total = subTotal + tax
         invoice = InvoiceModel(
-            Total=total, subTotal=subTotal, Tax=tax, salesPerson=salesPerson
+            order_id=instance.order_id,
+            Total=total,
+            subTotal=subTotal,
+            Tax=tax,
+            salesPerson=salesPerson,
         )
         invoice.save()
         for item in items:
@@ -698,7 +704,7 @@ def checkAvailability(data):
         ).get(pk=inventoryItemId)
         print(availableQuantity)
 
-        if availableQuantity <= orderedItemQuantity:
+        if availableQuantity < orderedItemQuantity:
             # this should return the item name and the available item quantity for this itemname
             return (
                 False,

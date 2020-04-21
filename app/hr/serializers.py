@@ -180,7 +180,7 @@ class SivSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = sivModel
-        fields = ["sivDate", "warehouseName", "approve", "siv_item"]
+        fields = ["sivId", "order", "sivDate", "warehouseName", "sivStatus", "siv_item"]
 
 
 class InvoiceItemLineSerializer(serializers.ModelSerializer):
@@ -194,4 +194,13 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvoiceModel
-        fields = ["salesPerson", "subTotal", "Total", "Tax", "date", "invoice_item"]
+        fields = [
+            "invoiceId",
+            "order",
+            "salesPerson",
+            "subTotal",
+            "Total",
+            "Tax",
+            "date",
+            "invoice_item",
+        ]
