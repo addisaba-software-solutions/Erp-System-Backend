@@ -40,25 +40,25 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
 
 
 class EmployeListAdd(generics.ListCreateAPIView):
-        queryset = EmployeModel.objects.all()
-        lookup_field = 'employeId'
-        # permission_classes=[HrPermissionsAll]
+    queryset = EmployeModel.objects.all()
+    lookup_field = 'employeId'
+    # permission_classes=[HrPermissionsAll]
 
-        def get_serializer_class(self):
-                if self.request.method == 'POST':
-                    serializer_class=EmployeSerializer
-                    
-                elif self.request.method == 'GET':
-                    serializer_class = EmployeReadSerializer      
-        
-                return serializer_class
+    def get_serializer_class(self):
+            if self.request.method == 'POST':
+                serializer_class=EmployeSerializer
+                
+            elif self.request.method == 'GET':
+                serializer_class = EmployeReadSerializer      
     
+            return serializer_class
 
-        def post(self,request):
-   
-            serializer= EmployeSerializer(
-                data=request.data,
-            ) 
+
+    def post(self,request):
+
+        serializer= EmployeSerializer(
+            data=request.data,
+        ) 
 
     def get_serializer_class(self):
         if self.request.method == "POST":

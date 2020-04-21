@@ -42,7 +42,6 @@ class UserSerializer(serializers.ModelSerializer):
         return val
 
     def validate_email(self, val):
-
         """
         Validates user data.
         """
@@ -67,7 +66,7 @@ class UserSerializer(serializers.ModelSerializer):
         """
         Validates user data.
         """
-        if not User.objects.filter(department=val).exists():
+        if not DepartmentModel.objects.filter(departmentId=val).exists():
             raise serializers.ValidationError("This department not exist")
         return val
 
@@ -103,6 +102,7 @@ class LoginUserSerializer(serializers.ModelSerializer):
         fields = ("username", "password")
 
     def validate(self, data):
+      
         """
         Validates user data.
         """
@@ -111,10 +111,10 @@ class LoginUserSerializer(serializers.ModelSerializer):
         )
 
         if not user:
-            return Response({"error": "Invalid Credentials"}, status=HTTP_404_NOT_FOUND)
+            return Response({"errors": {"Unauthorized": "Invalid Credentials"}}, status=401)
 
         if not user.is_active:
-            return {"error": "This user has been deactivated."}
+            return Response({"errors": "This user has been deactivated."})
         role = None
         if not user.roles:
             role = None

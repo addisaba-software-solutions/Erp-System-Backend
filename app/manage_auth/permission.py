@@ -27,7 +27,6 @@ class FinancePermissionsAll(permissions.BasePermission):
     """
     def has_permission(self, request, view):
         token=get_token(request)
-       
         department=get_department(token)
         role=get_role(token)
         claim=get_claim(token)
@@ -42,7 +41,6 @@ class FinancePermissionsAll(permissions.BasePermission):
                  return True
             else:
                  return False
-
         else:
             return False
 

@@ -51,11 +51,12 @@ class AccountListAdd(APIView):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):  # changed  to desired serializer
-
+       
         serializer = UserSerializer(data=request.data)
-
+       
         if serializer.is_valid():
             employe = EmployeModel.objects.get(employeId=request.data.get("employe"))
+            print(employe.department)
             department = DepartmentModel.objects.get(
                 departmentId=request.data.get("department")
             )
@@ -93,7 +94,5 @@ class LoginAPIView(APIView):
         if serializer.is_valid():
             return serializer.validated_data
         else:
-            return Response(
-                {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"errors": serializer.errors}, status=403)
 
