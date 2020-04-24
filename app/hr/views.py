@@ -484,27 +484,27 @@ class CompanyListAdd(generics.ListCreateAPIView):
 class StatusRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = StatusSerializer
     queryset = StatusModel.objects.all()
-    lookup_field = "id"
+    lookup_field = "order"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, id=None):
+    def get(self, request, order=None):
 
-        return self.retrieve(request, id)
+        return self.retrieve(request, order)
 
-    def put(self, request, id=None):
+    def put(self, request, order=None):
 
-        return self.partial_update(request, id)
+        return self.partial_update(request, order)
 
-    def delete(self, request, id=None):
+    def delete(self, request, order=None):
 
-        return self.destroy(request, id)
+        return self.destroy(request, order)
 
 
 class StatusListAdd(generics.ListCreateAPIView):
     serializer_class = StatusSerializer
     queryset = StatusModel.objects.all()
-    lookup_field = "id"
+    lookup_field = "order"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -556,7 +556,7 @@ class ShipmentScheduleListAdd(generics.ListCreateAPIView):
 class SivListAdd(generics.ListAPIView):
     serializer_class = SivSerializer
     queryset = sivModel.objects.all()
-    lookup_field = "sivId"
+    lookup_field = "order"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -568,27 +568,27 @@ class SivListAdd(generics.ListAPIView):
 class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SivSerializer
     queryset = sivModel.objects.all()
-    lookup_field = "sivId"
+    lookup_field = "order"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, sivId=None):
+    def get(self, request, order=None):
 
-        return self.retrieve(request, sivId)
+        return self.retrieve(request, order)
 
-    def put(self, request, sivId=None):
-        siv = sivModel.objects.get(sivId=sivId)
+    def put(self, request, order=None):
+        siv = sivModel.objects.get(order=order)
         if request.data["sivStatus"] == "Approved":
             status = StatusModel.objects.get(order_id=siv.order_id)
             status.status = "Issued"
             status.save()
 
-        return self.partial_update(request, sivId)
+        return self.partial_update(request, order)
 
     # used to delete siv might be deleted depending on the requirements
-    def delete(self, request, sivId=None):
+    def delete(self, request, order=None):
 
-        return self.destroy(request, sivId)
+        return self.destroy(request, order)
 
 
 """the end point to get invoice for order"""
@@ -597,7 +597,7 @@ class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
 class InvoiceListAdd(generics.ListAPIView):
     serializer_class = InvoiceItemSerializer
     queryset = InvoiceModel.objects.all()
-    lookup_field = "invoiceId"
+    lookup_field = "order"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -609,18 +609,18 @@ class InvoiceListAdd(generics.ListAPIView):
 class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = InvoiceItemSerializer
     queryset = InvoiceModel.objects.all()
-    lookup_field = "invoiceId"
+    lookup_field = "order"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, invoiceId=None):
+    def get(self, request, order=None):
 
-        return self.retrieve(request, invoiceId)
+        return self.retrieve(request, order)
 
     # used to delete siv might be deleted depending on the requirements
-    def delete(self, request, invoiceId=None):
+    def delete(self, request, order=None):
 
-        return self.destroy(request, invoiceId)
+        return self.destroy(request, order)
 
 
 def issue_invoice(sender, instance, **kwargs):
