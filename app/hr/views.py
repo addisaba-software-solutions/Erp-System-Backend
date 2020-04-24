@@ -246,30 +246,32 @@ class LevelListAdd(generics.ListCreateAPIView):
 """list of items in the order"""
 
 
-class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
+class ItemRUD(
+    generics.RetrieveUpdateDestroyAPIView
+):  # Got some error in delete and view single item
     serializer_class = InventoryItemModelSerializer
     queryset = InventoryItemModel.objects.all()
-    lookup_field = "inventoryItemId"
+    lookup_field = "InventoryItemId"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, inventoryItemId=None):
+    def get(self, request, InventoryItemId=None):
 
-        return self.retrieve(request, inventoryItemId)
+        return self.retrieve(request, InventoryItemId)
 
-    def put(self, request, inventoryItemId=None):
+    def put(self, request, InventoryItemId=None):
 
-        return self.update(request, inventoryItemId)
+        return self.update(request, InventoryItemId)
 
-    def delete(self, request, inventoryItemId=None):
+    def delete(self, request, InventoryItemId=None):
 
-        return self.destroy(request, inventoryItemId)
+        return self.destroy(request, InventoryItemId)
 
 
 class ItemListAdd(generics.ListCreateAPIView):
     serializer_class = InventoryItemModelSerializer
     queryset = InventoryItemModel.objects.all()
-    lookup_field = "inventoryItemId"
+    lookup_field = "InventoryItemId"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -492,7 +494,7 @@ class StatusRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, id=None):
 
-        return self.update(request, id)
+        return self.partial_update(request, id)
 
     def delete(self, request, id=None):
 
@@ -577,10 +579,9 @@ class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
     def put(self, request, sivId=None):
         siv = sivModel.objects.get(sivId=sivId)
         if request.data["sivStatus"] == "Approved":
-            status = StatusModel(status="Issued", order_id=siv.order_id)
+            status = StatusModel.objects.get(order_id=siv.order_id)
+            status.status = "Issued"
             status.save()
-
-            pass
 
         return self.partial_update(request, sivId)
 
@@ -623,10 +624,8 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
 
 
 def issue_invoice(sender, instance, **kwargs):
-    if (
-        instance.status == "Created"
-    ):  # Change staus with Delivered for correct invoice generation
-        items = ItemModel.objects.filter(order_id=5)  # Change insert the order id
+    if instance.status == "Delivered":
+        items = ItemModel.objects.filter(order_id=instance.order_id)
         salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
             pk=instance.order_id
         )
@@ -676,6 +675,10 @@ def issue_invoice(sender, instance, **kwargs):
                     invoice=invoice, **serializer.validated_data
                 )
 
+        status = StatusModel.objects.get(order_id=instance.order_id)
+        status.status = "Invoiced"
+        status.save()
+
 
 def updateStatus(sender, instance, **kwargs):
     """update the status to created"""
@@ -683,8 +686,16 @@ def updateStatus(sender, instance, **kwargs):
     status.save()
 
 
+def updateDeliveryStatus(sender, instance, **kwargs):
+    """update the status to created"""
+    status = StatusModel.objects.get(order_id=instance.order_id)
+    status.status = "Delivery Scheduled"
+    status.save()
+
+
 # update the order status to created after a data is inseted to the ordermodel
 post_save.connect(updateStatus, sender=OrderModel)
+post_save.connect(updateDeliveryStatus, sender=ShipmentScheduleModel)
 
 
 # signal to track if siv is approved and invoice should be generated
