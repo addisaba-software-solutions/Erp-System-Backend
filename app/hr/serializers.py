@@ -27,7 +27,7 @@ class EmployeReadSerializer(serializers.ModelSerializer):
 class DepartmentSerializer(serializers.ModelSerializer):
 
     department_roles = RoleSerializer(many=True, read_only=True,)
-    department_employes = EmployeReadSerializer(many=True, read_only=True,)
+    # department_employes = EmployeReadSerializer(many=True, read_only=True,)
 
     class Meta:
         model = DepartmentModel
@@ -45,15 +45,13 @@ class EmployeSerializer(serializers.ModelSerializer):
     department = serializers.CharField()
     level = serializers.CharField()
     roles = serializers.CharField()
-
+    
     def validate_email(self, val):
-
         """
         Validates user data.
         """
         if EmployeModel.objects.filter(email=val).exists():
             raise serializers.ValidationError("This email already exists")
-
         return val
 
     def validate_department(self, val):
@@ -68,6 +66,7 @@ class EmployeSerializer(serializers.ModelSerializer):
         """
         Validates user data.
         """
+      
         if not claimModel.objects.filter(levelId=val).exists():
             raise serializers.ValidationError("This claim not exist")
         return val

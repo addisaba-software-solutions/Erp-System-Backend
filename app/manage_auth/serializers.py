@@ -141,8 +141,7 @@ class LoginUserSerializer(serializers.ModelSerializer):
             }
 
         token, _ = Token.objects.get_or_create(user=user)
-        return Response(
-            {
+        return Response({"user": {
                 "token": token.key,
                 "id": user.id,
                 "username": user.username,
@@ -150,7 +149,8 @@ class LoginUserSerializer(serializers.ModelSerializer):
                 "department": department,
                 "role": role,
                 "level": level,
-            },
-            status=200,
+                                 } 
+                        },
+                status=200,
         )
 

@@ -20,6 +20,7 @@ from utilities.token import get_token, get_role
 from django.db.models.signals import post_save
 from rest_framework.response import Response
 from rest_framework import status
+import json
 
 
 class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
@@ -36,43 +37,26 @@ class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
         return self.update(request, employeId)
 
     def delete(self, request, employeId=None):
-        return self.destroy(request, employeId)
+        obj = EmployeModel.objects.get(employeId=employeId)
+        obj.delete()
+        return Response({"success": "Delete"}, status=200)
 
 
 class EmployeListAdd(generics.ListCreateAPIView):
-    queryset = EmployeModel.objects.all()
-    lookup_field = 'employeId'
-    # permission_classes=[HrPermissionsAll]
+   queryset = EmployeModel.objects.all()
+   lookup_field = 'employeId'
+   # permission_classes=[HrPermissionsAll]
 
-    def get_serializer_class(self):
-            if self.request.method == 'POST':
-                serializer_class=EmployeSerializer
-                
-            elif self.request.method == 'GET':
-                serializer_class = EmployeReadSerializer      
-    
-            return serializer_class
-
-
-    def post(self,request):
-
-        serializer= EmployeSerializer(
-            data=request.data,
-        ) 
-
-    def get_serializer_class(self):
-        if self.request.method == "POST":
-            serializer_class = EmployeSerializer
-
-        elif self.request.method == "GET":
-            serializer_class = EmployeReadSerializer
-
+   def get_serializer_class(self):
+        if self.request.method == 'POST':
+            serializer_class = EmployeSerializer           
+        elif self.request.method == 'GET':
+            serializer_class = EmployeReadSerializer        
         return serializer_class
 
-    def post(self, request):
 
+   def post(self, request):
         serializer = EmployeSerializer(data=request.data,)
-
         if serializer.is_valid():
             department = DepartmentModel.objects.get(
                 departmentId=request.data.get("department")
@@ -131,7 +115,6 @@ class DepartmentListAdd(generics.ListCreateAPIView):
     queryset= DepartmentModel.objects.all()
     lookup_field='departmentId'
     # permission_classes=[HrPermissionsAll]
-   
    
     def post(self,request):
         serializer= DepartmentSerializer(
