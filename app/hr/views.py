@@ -1,11 +1,45 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
-from .models import *
-from .serializers import *
+from .models import (
+    claimModel,
+    RoleModel,
+    EmployeModel,
+    DepartmentModel,
+    CatagoryModel,
+    InventoryItemModel,
+    CompanyModel,
+    ItemModel,
+    OrderModel,
+    StatusModel,
+    ShipmentScheduleModel,
+    sivItemListModel,
+    sivModel,
+    InvoiceLineItemModel,
+    InvoiceModel,
+)
+from .serializers import (
+    EmployeSerializer,
+    DepartmentSerializer,
+    EmployeReadSerializer,
+    RoleSerializer,
+    ClaimSerializer,
+    InventoryItemModelSerializer,
+    ItemSerializer,
+    CatagorySerializer,
+    OrderSerializer,
+    SivItemListSerializer,
+    CompanySerializer,
+    StatusSerializer,
+    ShipmentScheduleSerializer,
+    SivSerializer,
+    InvoiceItemSerializer,
+    InvoiceItemLineSerializer,
+)
+
 from rest_framework.views import APIView
 from utilities.token import get_token, get_role
 from manage_auth.permission import HrPermissionsAll
-
+from django.db.models.signals import post_save
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -20,7 +54,7 @@ from utilities.token import get_token, get_role
 from django.db.models.signals import post_save
 from rest_framework.response import Response
 from rest_framework import status
-import json
+
 
 
 class EmployeRUD(generics.RetrieveUpdateDestroyAPIView):
@@ -112,8 +146,8 @@ class DepartmentRUD(generics.RetrieveUpdateDestroyAPIView):
 
 class DepartmentListAdd(generics.ListCreateAPIView):
     serializer_class = DepartmentSerializer
-    queryset= DepartmentModel.objects.all()
-    lookup_field='departmentId'
+    queryset = DepartmentModel.objects.all()
+    lookup_field = "departmentId"
     # permission_classes=[HrPermissionsAll]
    
     def post(self,request):
@@ -221,30 +255,32 @@ class LevelListAdd(generics.ListCreateAPIView):
 """list of items in the order"""
 
 
-class ItemRUD(generics.RetrieveUpdateDestroyAPIView):
+class ItemRUD(
+    generics.RetrieveUpdateDestroyAPIView
+):  # Got some error in delete and view single item
     serializer_class = InventoryItemModelSerializer
     queryset = InventoryItemModel.objects.all()
-    lookup_field = "inventoryItemId"
+    lookup_field = "InventoryItemId"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, itemId=None):
+    def get(self, request, InventoryItemId=None):
 
-        return self.retrieve(request, itemId)
+        return self.retrieve(request, InventoryItemId)
 
-    def put(self, request, itemId=None):
+    def put(self, request, InventoryItemId=None):
 
-        return self.update(request, itemId)
+        return self.update(request, InventoryItemId)
 
-    def delete(self, request, itemId=None):
+    def delete(self, request, InventoryItemId=None):
 
-        return self.destroy(request, itemId)
+        return self.destroy(request, InventoryItemId)
 
 
 class ItemListAdd(generics.ListCreateAPIView):
     serializer_class = InventoryItemModelSerializer
     queryset = InventoryItemModel.objects.all()
-    lookup_field = "inventoryItemId"
+    lookup_field = "InventoryItemId"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -260,27 +296,27 @@ class ItemListAdd(generics.ListCreateAPIView):
 class OrderItemRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ItemSerializer
     queryset = ItemModel.objects.all()
-    lookup_field = "itemId"
+    lookup_field = "itemName"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, itemId=None):
+    def get(self, request, itemName=None):
 
-        return self.retrieve(request, itemId)
+        return self.retrieve(request, itemName)
 
-    def put(self, request, itemId=None):
+    def put(self, request, itemName=None):
 
-        return self.update(request, itemId)
+        return self.update(request, itemName)
 
-    def delete(self, request, itemId=None):
+    def delete(self, request, itemName=None):
 
-        return self.destroy(request, itemId)
+        return self.destroy(request, itemName)
 
 
 class OrderItemListAdd(generics.ListCreateAPIView):
     serializer_class = ItemSerializer
     queryset = ItemModel.objects.all()
-    lookup_field = "itemId"
+    lookup_field = "itemName"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -332,21 +368,21 @@ class CatagoryListAdd(generics.ListCreateAPIView):
 class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = OrderSerializer
     queryset = OrderModel.objects.all()
-    lookup_field = "orderid"
+    lookup_field = "orderNumber"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, orderId=None):
+    def get(self, request, orderNumber=None):
 
-        return self.retrieve(request, orderid)
+        return self.retrieve(request, orderNumber)
 
-    def put(self, request, orderId=None):
+    def put(self, request, orderNumber=None):
 
-        return self.update(request, orderid)
+        return self.update(request, orderNumber)
 
-    def delete(self, request, orderId=None):
+    def delete(self, request, orderNumber=None):
 
-        return self.destroy(request, orderid)
+        return self.destroy(request, orderNumber)
 
 
 """item order which have list of items in one order"""
@@ -355,7 +391,7 @@ class OrderRUD(generics.RetrieveUpdateDestroyAPIView):
 class OrderListAdd(generics.ListCreateAPIView):
     serializer_class = OrderSerializer
     queryset = OrderModel.objects.all()
-    lookup_field = "orderid"
+    lookup_field = "orderNumber"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
@@ -364,17 +400,56 @@ class OrderListAdd(generics.ListCreateAPIView):
         return self.list(request)
 
     def post(self, request):
-
-        if checkAvailability(request.data):
+        # Call checkAvailability when the request arrives
+        available = checkAvailability(request.data)
+        print("the value of availabe is")
+        print(available)
+        if available[0]:
             serializer = OrderSerializer(data=request.data,)
-            print("orders kjhdfskjnhfdkj")
-            if serializer.is_valid():
-                print("in the validslkafj")
-                serializer.save()
+            if serializer.is_valid(raise_exception=True):
+                order = serializer.save()
+                items = ItemModel.objects.filter(order_id=order)
+                warehouseName = ""
+                for item in items:
+                    itemId = item.InventoryItem_id
+                    warehouseName = InventoryItemModel.objects.values_list(
+                        "warehouseName", flat=True
+                    ).get(pk=itemId)
+                siv = sivModel(order_id=order.orderNumber, warehouseName=warehouseName)
+                siv.save()
+                for item in items:
+                    itemName = item.itemName
+                    itemQuantity = item.quantity
+                    item = {
+                        "order_id": order,
+                        "itemName": itemName,
+                        "quantity": itemQuantity,
+                    }
+                    serializer = SivItemListSerializer(data=item)
+                    if serializer.is_valid(raise_exception=True):
+                        sivItemListModel.objects.create(
+                            siv=siv, **serializer.validated_data
+                        )
+                for item in items:
+                    itemName = item.itemName
+                    for itemQty in available[1]:
+                        print("the item quantitiy is")
+                        print(itemQty)
+                        print(itemName)
+                        if itemName == itemQty["itemName"]:
+                            inventoryItem = InventoryItemModel.objects.get(
+                                itemName=itemName
+                            )
+                            inventoryItem.quantity = itemQty["quantity"]
+                            inventoryItem.save()
+
                 return Response({"order success"}, status=HTTP_201_CREATED)
         else:
             return Response(
-                "requested item amount is not available at the moment",
+                {
+                    "Error": "requested for item is not available at the moment",
+                    "item": available[1],
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )
 
@@ -428,7 +503,7 @@ class StatusRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, id=None):
 
-        return self.update(request, id)
+        return self.partial_update(request, id)
 
     def delete(self, request, id=None):
 
@@ -460,15 +535,15 @@ class ShipmentScheduleRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, shipmentId=None):
 
-        return self.retrieve(request, id)
+        return self.retrieve(request, shipmentId)
 
     def put(self, request, shipmentId=None):
 
-        return self.update(request, id)
+        return self.update(request, shipmentId)
 
     def delete(self, request, shipmentId=None):
 
-        return self.destroy(request, id)
+        return self.destroy(request, shipmentId)
 
 
 class ShipmentScheduleListAdd(generics.ListCreateAPIView):
@@ -508,12 +583,21 @@ class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, sivId=None):
 
-        return self.retrieve(request, id)
+        return self.retrieve(request, sivId)
+
+    def put(self, request, sivId=None):
+        siv = sivModel.objects.get(sivId=sivId)
+        if request.data["sivStatus"] == "Approved":
+            status = StatusModel.objects.get(order_id=siv.order_id)
+            status.status = "Issued"
+            status.save()
+
+        return self.partial_update(request, sivId)
 
     # used to delete siv might be deleted depending on the requirements
     def delete(self, request, sivId=None):
 
-        return self.destroy(request, id)
+        return self.destroy(request, sivId)
 
 
 """the end point to get invoice for order"""
@@ -540,82 +624,117 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, invoiceId=None):
 
-        return self.retrieve(request, id)
+        return self.retrieve(request, invoiceId)
 
     # used to delete siv might be deleted depending on the requirements
-    def delete(self, request, sivId=None):
+    def delete(self, request, invoiceId=None):
 
-        return self.destroy(request, id)
-
-
-# called after a new order is inserted to database
+        return self.destroy(request, invoiceId)
 
 
-def issue_siv(sender, instance, **kwargs):
-    itemId = OrderModel.objects.values_list("item", flat=True).get(pk=instance.orderId)
-    itemName = ItemModel.objects.values_list("itemName", flat=True).get(pk=itemId)
-    warehouseName = ItemModel.objects.values_list("warehouseName", flat=True).get(
-        pk=itemId
-    )
-    orderQuantity = OrderModel.objects.values_list("orderQuantity", flat=True).get(
-        pk=instance.orderId
-    )
-    orderDate = OrderModel.objects.values_list("orderDate", flat=True).get(
-        pk=instance.orderId
-    )
-    siv = sivModel(
-        itemId=itemId,
-        itemName=itemName,
-        quantity=orderQuantity,
-        sivDate=orderDate,
-        warehouseName=warehouseName,
-    )
-    siv.save()
+def issue_invoice(sender, instance, **kwargs):
+    if instance.status == "Delivered":
+        items = ItemModel.objects.filter(order_id=instance.order_id)
+        salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
+            pk=instance.order_id
+        )
+        invoice_dict = {}
+        i = 0
+        subTotal = 0
+        for item in items:
+            invoice_item_dict = {}
+            invoice_item_dict["itemName"] = item.itemName
+            invoice_item_dict["quantity"] = item.quantity
+            itemId = item.InventoryItem_id
+            unitPrice = InventoryItemModel.objects.values_list(
+                "retailPrice", flat=True
+            ).get(pk=itemId)
+            invoice_item_dict["unitPrice"] = unitPrice
+            invoice_dict[i] = invoice_item_dict
+            i = i + 1
+
+        for i in invoice_dict:
+            unitPrice = invoice_dict[i]["unitPrice"]
+            subTotal = subTotal + unitPrice
+        tax = subTotal * 0.15
+        total = subTotal + tax
+        invoice = InvoiceModel(
+            order_id=instance.order_id,
+            Total=total,
+            subTotal=subTotal,
+            Tax=tax,
+            salesPerson=salesPerson,
+        )
+        invoice.save()
+        for item in items:
+            itemName = item.itemName
+            itemQuantity = item.quantity
+            itemId = item.InventoryItem_id
+            unitPrice = InventoryItemModel.objects.values_list(
+                "retailPrice", flat=True
+            ).get(pk=itemId)
+            invoicedata = {
+                "itemName": itemName,
+                "quantity": itemQuantity,
+                "unitPrice": unitPrice,
+            }
+            serializer = InvoiceItemLineSerializer(data=invoicedata)
+            if serializer.is_valid(raise_exception=True):
+                InvoiceLineItemModel.objects.create(
+                    invoice=invoice, **serializer.validated_data
+                )
+
+        status = StatusModel.objects.get(order_id=instance.order_id)
+        status.status = "Invoiced"
+        status.save()
 
 
 def updateStatus(sender, instance, **kwargs):
-    "update the status to created"
-    print("the item model is populated")
-    print(instance.orderid)
-    orderstatus = StatusModel(status="Created", order_id=instance.orderid)
-    orderstatus.save()
+    """update the status to created"""
+    status = StatusModel(status="Created", order_id=instance.orderNumber)
+    status.save()
+
+
+def updateDeliveryStatus(sender, instance, **kwargs):
+    """update the status to created"""
+    status = StatusModel.objects.get(order_id=instance.order_id)
+    status.status = "Delivery Scheduled"
+    status.save()
 
 
 # update the order status to created after a data is inseted to the ordermodel
 post_save.connect(updateStatus, sender=OrderModel)
-
-
-def issue_invoice(sender, instance, **kwargs):
-    print("the item status :" + str(instance.approve))
-    if instance.approve == "Approved":
-        return True
+post_save.connect(updateDeliveryStatus, sender=ShipmentScheduleModel)
 
 
 # signal to track if siv is approved and invoice should be generated
-post_save.connect(issue_invoice, sender=sivModel)
+post_save.connect(issue_invoice, sender=StatusModel)
 
-# checkes items availability and update after order
+# checkes items availability
 def checkAvailability(data):
     items = data["item_order"]
-    print("the tegern")
-    print(items)
+    updatedItemQuantity = []
+
     for item in items:
-        print("the iten name is")
-        item_name = item["itemName"]
-        print(item_name)
-        item_qty = item["quantity"]
-        print(item_qty)
+        orderedItemName = item["itemName"]
+        orderedItemQuantity = item["quantity"]
+        inventoryItemId = item["InventoryItem"]
+        availableQuantity = InventoryItemModel.objects.values_list(
+            "quantity", flat=True
+        ).get(pk=inventoryItemId)
+        print(availableQuantity)
 
-        # availableQuantity = InventoryItemModel.objects.values_list(
-        #     "quantity", flat=True
-        # ).get(
-        #     pk="computer"
-        # )  # just for test pk should be replaced with item_name
-        # print(availableQuantity)
+        if availableQuantity < orderedItemQuantity:
+            # this should return the item name and the available item quantity for this itemname
+            return (
+                False,
+                {"itemName": orderedItemName, "available": availableQuantity},
+            )
 
-        # if availableQuantity <= item_qty:
-        #     newItemQuantity = int(item_qty) - int(availableQuantity)
-        #     item = InventoryItemModel.objects.get(pk=item_name)
-        #     item.quantity = str(newItemQuantity)
-        #     item.save()
-    return True
+        newItemQuantity = int(availableQuantity) - int(orderedItemQuantity)
+        updatedQuantity = {"itemName": orderedItemName, "quantity": newItemQuantity}
+        updatedQuantity_copy = updatedQuantity.copy()
+        updatedItemQuantity.append(updatedQuantity_copy)
+    print("the new items quantity is ")
+    print(updatedItemQuantity)
+    return (True, updatedItemQuantity)

@@ -1,17 +1,18 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from .models import User
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from rest_framework import serializers, exceptions
 from django.core import serializers as jsonParse
-from rest_framework import serializers, status
 from rest_framework.validators import UniqueValidator
-from hr.serializers import *
+from hr.serializers import (
+    ClaimSerializer,
+    RoleSerializer,
+    DepartmentSerializer,
+)
 
-from hr.models import *
+from hr.models import claimModel, RoleModel, DepartmentModel
 
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -20,7 +21,6 @@ from rest_framework.status import (
     HTTP_409_CONFLICT,
 )
 from .models import UserManager, EmployeModel
-from utilities.token import *
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
     employe = serializers.CharField()
     department = serializers.CharField()
     claim = serializers.CharField()
-    role = serializers.CharField()
+    roles = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate_username(self, val):
@@ -78,7 +78,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This claim not exist")
         return val
 
-    def validate_role(self, val):
+    def validate_roles(self, val):
         """
         Validates user data.
         """
@@ -153,4 +153,3 @@ class LoginUserSerializer(serializers.ModelSerializer):
                         },
                 status=200,
         )
-

@@ -24,6 +24,8 @@ from .views import (
     SIVRUD,
     OrderItemRUD,
     OrderItemListAdd,
+    InvoiceListAdd,
+    InvoiceRUD,
 )
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -76,4 +78,6 @@ urlpatterns = [
     path("api/v1/order/", OrderListAdd.as_view()),
     path("api/v1/company/<int:companyId>/", CompanyRUD.as_view()),
     path("api/v1/company/", CompanyListAdd.as_view()),
+    path("api/v1/generateinvoice/<int:invoiceId>/", InvoiceRUD.as_view()),
+    path("api/v1/generateinvoice/", InvoiceListAdd.as_view()),
 ]

@@ -1,26 +1,23 @@
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
 from manage_auth.models import User
 from django.core.exceptions import ValidationError
 
 def get_token(request):
     PREFIX = 'Bearer'
-  
     header=request.headers.get('Authorization')
     if(header is None):
        return False
     else:
         try:
-                bearer, _, token = header.partition(' ')
-                if bearer != PREFIX:
-                    return False
-                elif not token: 
-                    return False   
-                else:
-                    user=Token.objects.get(key=token)
-                    return token
-
+            bearer, _, token = header.partition(" ")
+            if bearer != PREFIX:
+                return False
+            elif not token:
+                return False
+            else:
+                user = Token.objects.get(key=token)
+                return token
         except:
              return  False
      

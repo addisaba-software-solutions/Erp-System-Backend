@@ -55,14 +55,12 @@ class AccountListAdd(APIView):
 
     def post(self, request, *args, **kwargs):  # changed  to desired serializer
         serializer = UserSerializer(data=request.data)
-       
         if serializer.is_valid():
             employe = EmployeModel.objects.get(employeId=request.data.get("employe"))
-            print(employe.department)
             department = DepartmentModel.objects.get(
                 departmentId=request.data.get("department")
             )
-            role = RoleModel.objects.get(roleId=request.data.get("role"))
+            role = RoleModel.objects.get(roleId=request.data.get("roles"))
             claim = claimModel.objects.get(levelId=request.data.get("claim"))
 
             try:

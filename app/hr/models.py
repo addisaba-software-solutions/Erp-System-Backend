@@ -96,8 +96,8 @@ class claimModel(models.Model):
 
 
 class OrderModel(models.Model):
-    orderid = models.AutoField(primary_key=True, unique=True)
-    orderNumber = models.IntegerField()
+    # orderid = models.AutoField(primary_key=True, unique=True)
+    orderNumber = models.IntegerField(primary_key=True, unique=True)
     company = models.ForeignKey(
         "CompanyModel", to_field="companyId", on_delete=models.CASCADE
     )
@@ -138,7 +138,7 @@ class InventoryItemModel(models.Model):
 
 
 class ItemModel(models.Model):
-    itemId = models.AutoField(primary_key=True, auto_created=True)
+    # itemId = models.AutoField(primary_key=True, auto_created=True) the same item name should not present in a single order number
     order = models.ForeignKey(
         OrderModel, related_name="item_order", on_delete=models.CASCADE,
     )
@@ -148,6 +148,9 @@ class ItemModel(models.Model):
 
     itemName = models.CharField(max_length=100)
     quantity = models.IntegerField(null=False)
+
+    class Meta:
+        unique_together = ("order", "itemName")
 
     def __str__(self):
         return str(self.itemName)
@@ -171,7 +174,7 @@ class CatagoryModel(models.Model):
 class StatusModel(models.Model):
     status = models.CharField(max_length=100, choices=ORDERSTATUS, default="")
     order = models.ForeignKey(
-        "OrderModel", to_field="orderid", on_delete=models.CASCADE
+        "OrderModel", to_field="orderNumber", on_delete=models.CASCADE
     )
     date = models.DateField(auto_now=True)
 
@@ -227,11 +230,17 @@ class CompanyModel(models.Model):
 
 class InvoiceModel(models.Model):
     invoiceId = models.AutoField(primary_key=True, auto_created=True)
+    order = models.ForeignKey(
+        "OrderModel", to_field="orderNumber", on_delete=models.CASCADE
+    )
     salesPerson = models.CharField(max_length=100)
     subTotal = models.FloatField(verbose_name="Sub total")
     Total = models.FloatField()
     Tax = models.FloatField()
-    date = models.DateField(max_length=20)
+    date = models.DateField(max_length=20, auto_now=True)
+
+    class Meta:
+        unique_together = ("invoiceId", "order")
 
     def __str__(self):
         return str(self.invoiceId)
@@ -250,8 +259,7 @@ class InvoiceLineItemModel(models.Model):
     itemName = models.CharField(max_length=100)
     unitPrice = models.FloatField(max_length=100)
     quantity = models.IntegerField()
-    ItemId = models.IntegerField()
-    item_discount = models.FloatField(max_length=100)
+    # item_discount = models.FloatField(max_length=100)
 
     def __str__(self):
         return str(self.itemName)
@@ -262,9 +270,15 @@ class InvoiceLineItemModel(models.Model):
 
 class sivModel(models.Model):
     sivId = models.AutoField(primary_key=True, auto_created=True)
+    order = models.ForeignKey(
+        "OrderModel", to_field="orderNumber", on_delete=models.CASCADE
+    )
     sivDate = models.DateField(auto_now=True)
     warehouseName = models.CharField(max_length=100)
-    approve = models.CharField(max_length=100, choices=STATUS, default=STATUS.Pending)
+    sivStatus = models.CharField(max_length=100, choices=STATUS, default=STATUS.Pending)
+
+    class Meta:
+        unique_together = ("sivId", "order")
 
     def __str__(self):
         return str(self.sivId)
@@ -275,7 +289,6 @@ class sivModel(models.Model):
 
 class sivItemListModel(models.Model):
     sivId = models.AutoField(primary_key=True, auto_created=True)
-    itemId = models.IntegerField()
     siv = models.ForeignKey(
         "sivModel", related_name="siv_item", on_delete=models.CASCADE
     )

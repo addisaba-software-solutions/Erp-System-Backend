@@ -1,16 +1,24 @@
 from rest_framework import permissions
-from utilities.token import *
+from utilities.token import get_claim, get_department, get_role, get_token, is_admin
 
 from rest_framework.authtoken.models import Token
-DANGER_METHODS = ['GET','POST','PUT','DELETE', 'HEAD', 'OPTIONS']
-CRITICAL_METHODS = ['GET', 'HEAD','POST','PUT', 'OPTIONS',]
-SAFE_METHODS = ['GET', 'HEAD','POST', 'OPTIONS']
+
+DANGER_METHODS = ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"]
+CRITICAL_METHODS = [
+    "GET",
+    "HEAD",
+    "POST",
+    "PUT",
+    "OPTIONS",
+]
+SAFE_METHODS = ["GET", "HEAD", "POST", "OPTIONS"]
 
 class AdminPermissionsAll(permissions.BasePermission):
     """
     Owners of the object or admins can do anything.
     Everyone else can do nothing.
     """
+
     def has_permission(self, request, view):
         token = get_token(request)
         if not token:
@@ -29,6 +37,7 @@ class HrPermissionsAll(permissions.BasePermission):
     Owners of the object or admins can do anything.
     Everyone else can do nothing.
     """
+
     def has_permission(self, request, view):
         token=get_token(request)
         if(token!=False):
@@ -103,7 +112,7 @@ class SalesPermissionsAll(permissions.BasePermission):
             elif str(claim) == 'Junior' and request.method in SAFE_METHODS:
                  return True
             else:
-                 return False
+                return False
 
         else:
             return False
@@ -114,6 +123,7 @@ class LogisticsPermissionsAll(permissions.BasePermission):
     Owners of the object or admins can do anything.
     Everyone else can do nothing.
     """
+
     def has_permission(self, request, view):
         token=get_token(request)
         if(token!=False):
@@ -132,16 +142,18 @@ class LogisticsPermissionsAll(permissions.BasePermission):
             elif str(claim) == 'Junior' and request.method in SAFE_METHODS:
                  return True
             else:
-                 return False
+                return False
 
         else:
             return False
+
 
 class InventoryPermissionsAll(permissions.BasePermission):
     """
     Owners of the object or admins can do anything.
     Everyone else can do nothing.
     """
+
     def has_permission(self, request, view):
         token=get_token(request)
         if(token!=False):
@@ -160,7 +172,7 @@ class InventoryPermissionsAll(permissions.BasePermission):
             elif str(claim) == 'Junior' and request.method in SAFE_METHODS:
                  return True
             else:
-                 return False
+                return False
 
         else:
-            return False                               
+            return False
