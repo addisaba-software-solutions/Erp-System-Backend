@@ -97,7 +97,7 @@ class claimModel(models.Model):
 
 class OrderModel(models.Model):
     # orderid = models.AutoField(primary_key=True, unique=True)
-    orderNumber = models.IntegerField(primary_key=True, unique=True)
+    orderNumber = models.AutoField(primary_key=True, unique=True)
     company = models.ForeignKey(
         "CompanyModel", to_field="companyId", on_delete=models.CASCADE
     )

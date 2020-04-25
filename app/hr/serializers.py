@@ -144,11 +144,18 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         items_data = validated_data.pop("item_order")
         order = OrderModel.objects.create(**validated_data)
+        print("the items changed is")
 
         for item_data in items_data:
             ItemModel.objects.create(order=order, **item_data)
 
         return order
+
+    def stats(self):
+        """
+        Returns a dict of all stats for the player.
+        """
+        return self._stats
 
 
 class OrderReadSerializer(serializers.ModelSerializer):
