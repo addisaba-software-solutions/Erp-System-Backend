@@ -259,7 +259,6 @@ class InvoiceLineItemModel(models.Model):
     itemName = models.CharField(max_length=100)
     unitPrice = models.FloatField(max_length=100)
     quantity = models.IntegerField()
-    # item_discount = models.FloatField(max_length=100)
 
     def __str__(self):
         return str(self.itemName)

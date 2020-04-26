@@ -641,12 +641,13 @@ def issue_invoice(sender, instance, **kwargs):
                 "retailPrice", flat=True
             ).get(pk=itemId)
             invoice_item_dict["unitPrice"] = unitPrice
+            invoice_item_dict["amount"] = unitPrice * item.quantity
             invoice_dict[i] = invoice_item_dict
             i = i + 1
 
         for i in invoice_dict:
-            unitPrice = invoice_dict[i]["unitPrice"]
-            subTotal = subTotal + unitPrice
+            ammount = invoice_dict[i]["amount"]
+            subTotal = subTotal + ammount
         tax = subTotal * 0.15
         total = subTotal + tax
         invoice = InvoiceModel(
