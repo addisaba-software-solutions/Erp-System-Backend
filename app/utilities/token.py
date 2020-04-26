@@ -3,13 +3,11 @@ from rest_framework.response import Response
 from manage_auth.models import User
 from django.core.exceptions import ValidationError
 
-
-def get_token(self, request):
-    PREFIX = "Bearer"
-
-    header = request.headers.get("Authorization")
-    if header is None:
-        return False
+def get_token(request):
+    PREFIX = 'Bearer'
+    header=request.headers.get('Authorization')
+    if(header is None):
+       return False
     else:
         try:
             bearer, _, token = header.partition(" ")
@@ -21,24 +19,24 @@ def get_token(self, request):
                 user = Token.objects.get(key=token)
                 return token
         except:
-            return False
-
-
-def get_role(token):
-    role = Token.objects.get(key=token).user.roles
+             return  False
+     
+def get_role(token) :
+    role=Token.objects.get(key=token).user.roles
     return role
 
-
-def get_claim(token):
-    claim = Token.objects.get(key=token).user.claim
+def get_claim(token) :
+    claim= Token.objects.get(key=token).user.claim
     return claim
 
+def is_superuser(token):
+    is_superuser = Token.objects.get(key=token).user.is_superuser
+    return is_superuser
 
 def is_admin(token):
     is_admin = Token.objects.get(key=token).user.is_admin
-    return is_admin
-
+    return is_admin  
 
 def get_department(token):
     role = Token.objects.get(key=token).user.department
-    return role
+    return role    

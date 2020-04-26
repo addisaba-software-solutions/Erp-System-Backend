@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 from .models import User
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
@@ -13,7 +12,7 @@ from hr.serializers import (
     DepartmentSerializer,
 )
 
-from hr.models import claimModel, RoleModel
+from hr.models import claimModel, RoleModel, DepartmentModel
 
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
@@ -43,7 +42,6 @@ class UserSerializer(serializers.ModelSerializer):
         return val
 
     def validate_email(self, val):
-
         """
         Validates user data.
         """
@@ -64,13 +62,13 @@ class UserSerializer(serializers.ModelSerializer):
             )
         return val
 
-    # def validate_department(self, val):
-    #     """
-    #     Validates user data.
-    #     """
-    #     if not User.objects.filter(department=val).exists():
-    #         raise serializers.ValidationError("This department not exist")
-    #     return val
+    def validate_department(self, val):
+        """
+        Validates user data.
+        """
+        if not DepartmentModel.objects.filter(departmentId=val).exists():
+            raise serializers.ValidationError("This department not exist")
+        return val
 
     def validate_claim(self, val):
         """
@@ -104,6 +102,7 @@ class LoginUserSerializer(serializers.ModelSerializer):
         fields = ("username", "password")
 
     def validate(self, data):
+      
         """
         Validates user data.
         """
@@ -112,10 +111,10 @@ class LoginUserSerializer(serializers.ModelSerializer):
         )
 
         if not user:
-            return Response({"error": "Invalid Credentials"}, status=HTTP_404_NOT_FOUND)
+            return Response({"errors": {"Unauthorized": "Invalid Credentials"}}, status=401)
 
         if not user.is_active:
-            return {"error": "This user has been deactivated."}
+            return Response({"errors": "This user has been deactivated."})
         role = None
         if not user.roles:
             role = None
@@ -142,8 +141,7 @@ class LoginUserSerializer(serializers.ModelSerializer):
             }
 
         token, _ = Token.objects.get_or_create(user=user)
-        return Response(
-            {
+        return Response({"user": {
                 "token": token.key,
                 "id": user.id,
                 "username": user.username,
@@ -151,6 +149,7 @@ class LoginUserSerializer(serializers.ModelSerializer):
                 "department": department,
                 "role": role,
                 "level": level,
-            },
-            status=200,
+                                 } 
+                        },
+                status=200,
         )

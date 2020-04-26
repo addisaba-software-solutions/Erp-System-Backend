@@ -19,48 +19,48 @@ from rest_framework.status import (
     HTTP_204_NO_CONTENT,
 )
 
-
 class AccountRUD(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    lookup_field = "id"
+    lookup_field = "accountId"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
 
-    def get(self, request, id=None):
+    def get(self, request, accountId=None):
         # token = get_token(request)
         return self.retrieve(request, id)
 
-    def put(self, request, id=None):
+    def put(self, request, accountId=None):
         # token = get_token(request)
         return self.update(request, id)
-
-    def delete(self, request, id=None):
-        # token = get_token(request)
-        return self.destroy(request, id)
 
 
 class AccountListAdd(APIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     lookup_field = "id"
-    # permission_classes=(AdminPermissionsAll,)
-
+    permission_classes = (AdminPermissionsAll,)
     def get(self, request):
         query_set = User.objects.all()
         serializer = UserSerializer(query_set, context={"request": request}, many=True)
         return Response(serializer.data)
 
+    def delete(self, request):
+        account = User.objects.get(email=request.data.get('email'))
+        account.delete()
+        emp = EmployeModel.objects.get(email=request.data.get('email'))
+        emp.has_account = False
+        emp.save()
+        return Response({"success": "Delete"}, status=200)
+
     def post(self, request, *args, **kwargs):  # changed  to desired serializer
-
         serializer = UserSerializer(data=request.data)
-
         if serializer.is_valid():
             employe = EmployeModel.objects.get(employeId=request.data.get("employe"))
             department = DepartmentModel.objects.get(
                 departmentId=request.data.get("department")
             )
-            role = RoleModel.objects.get(roleId=request.data.get("role"))
+            role = RoleModel.objects.get(roleId=request.data.get("roles"))
             claim = claimModel.objects.get(levelId=request.data.get("claim"))
 
             try:
@@ -68,11 +68,15 @@ class AccountListAdd(APIView):
                     email=request.data.get("email"),
                     username=request.data.get("username"),
                     password=request.data.get("password"),
+                    is_admin=request.data.get("is_admin"),
                     employe=employe,
                     department=department,
                     roles=role,
                     claim=claim,
                 )
+                employe = EmployeModel.objects.get(employeId=request.data.get("employe"))
+                employe.has_account = True
+                employe.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             except Exception as e:
@@ -81,7 +85,6 @@ class AccountListAdd(APIView):
             return Response(
                 {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
             )
-
 
 class LoginAPIView(APIView):
     serializer_class = LoginUserSerializer
@@ -94,6 +97,5 @@ class LoginAPIView(APIView):
         if serializer.is_valid():
             return serializer.validated_data
         else:
-            return Response(
-                {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"errors": serializer.errors}, status=403)
+

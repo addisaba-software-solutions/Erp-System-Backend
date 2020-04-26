@@ -3,10 +3,8 @@ from model_utils import Choices
 
 STATUS = Choices("Pending", "Approved")
 PAYMENTOPTION = Choices("VAT", "TOT")
-TERMOFEMPLOYMENTOPTION = Choices("Permament", "Temporary", "Hourly")
-ORDERSTATUS = Choices(
-    "Created", "Issued", "Delivery Scheduled", "Delivered", "Invoiced"
-)
+TERMOFEMPLOYMENTOPTION = Choices("Permanent", "Contract", "Hourly")
+ORDERSTATUS = Choices("Created", "Issued", "Delivered", "Invoiced")
 
 """Employee has one department and one role"""
 
@@ -31,6 +29,7 @@ class EmployeModel(models.Model):
         verbose_name="Role",
         related_name="role_detail",
         on_delete=models.CASCADE,
+        
     )
     level = models.ForeignKey(
         "claimModel",
@@ -44,9 +43,10 @@ class EmployeModel(models.Model):
     country = models.CharField(max_length=20)
     region = models.CharField(max_length=25)
     city = models.CharField(max_length=20)
+    has_account = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.firstName
+        return self.email
 
 
 """Department has many employee"""
