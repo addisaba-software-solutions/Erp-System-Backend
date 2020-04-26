@@ -402,8 +402,6 @@ class OrderListAdd(generics.ListCreateAPIView):
     def post(self, request):
         # Call checkAvailability when the request arrives
         available = checkAvailability(request.data)
-        print("the value of availabe is")
-        print(available)
         if available[0]:
             serializer = OrderSerializer(data=request.data,)
             if serializer.is_valid(raise_exception=True):
@@ -433,9 +431,7 @@ class OrderListAdd(generics.ListCreateAPIView):
                 for item in items:
                     itemName = item.itemName
                     for itemQty in available[1]:
-                        print("the item quantitiy is")
-                        print(itemQty)
-                        print(itemName)
+        
                         if itemName == itemQty["itemName"]:
                             inventoryItem = InventoryItemModel.objects.get(
                                 itemName=itemName
@@ -449,6 +445,8 @@ class OrderListAdd(generics.ListCreateAPIView):
                 {
                     "Error": "requested for item is not available at the moment",
                     "item": available[1],
+                    
+                    
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
@@ -712,17 +710,35 @@ post_save.connect(issue_invoice, sender=StatusModel)
 
 # checkes items availability
 def checkAvailability(data):
+    
     items = data["item_order"]
     updatedItemQuantity = []
 
     for item in items:
-        orderedItemName = item["itemName"]
+        try:
+            int(item["InventoryItem"])
+        except:
+             return (
+                False,
+                {"itemName": "Please select an item!", "available":"It is not a valid input"},
+             )
+        InventoryItemId = item["InventoryItem"]
         orderedItemQuantity = item["quantity"]
-        inventoryItemId = item["InventoryItem"]
+        if item["InventoryItem"] is None:
+            return  (
+                False,
+                {"itemName": "Please select an item!", "available":"It is not a valid input"}),
+
+        orderedItemName =  InventoryItemModel.objects.values_list( "itemName", flat=True).get(InventoryItemId=InventoryItemId)
         availableQuantity = InventoryItemModel.objects.values_list(
             "quantity", flat=True
-        ).get(pk=inventoryItemId)
-        print(availableQuantity)
+        ).get(pk=InventoryItemId)
+        if  not isinstance(orderedItemQuantity, int) or orderedItemQuantity<1 :
+            return (
+                False,
+                {"itemName": orderedItemName, "available":availableQuantity},
+            )
+     
 
         if availableQuantity < orderedItemQuantity:
             # this should return the item name and the available item quantity for this itemname
@@ -735,6 +751,4 @@ def checkAvailability(data):
         updatedQuantity = {"itemName": orderedItemName, "quantity": newItemQuantity}
         updatedQuantity_copy = updatedQuantity.copy()
         updatedItemQuantity.append(updatedQuantity_copy)
-    print("the new items quantity is ")
-    print(updatedItemQuantity)
     return (True, updatedItemQuantity)

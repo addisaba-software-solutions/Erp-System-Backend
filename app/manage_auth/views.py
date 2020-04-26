@@ -60,7 +60,7 @@ class AccountListAdd(APIView):
             department = DepartmentModel.objects.get(
                 departmentId=request.data.get("department")
             )
-            role = RoleModel.objects.get(roleId=request.data.get("roles"))
+            role = RoleModel.objects.get(roleId=request.data.get("role"))
             claim = claimModel.objects.get(levelId=request.data.get("claim"))
 
             try:
