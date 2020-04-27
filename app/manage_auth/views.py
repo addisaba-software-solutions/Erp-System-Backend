@@ -39,7 +39,7 @@ class AccountListAdd(APIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     lookup_field = "id"
-    permission_classes = (AdminPermissionsAll,)
+    # permission_classes = (AdminPermissionsAll,)
     def get(self, request):
         query_set = User.objects.all()
         serializer = UserSerializer(query_set, context={"request": request}, many=True)
@@ -60,7 +60,7 @@ class AccountListAdd(APIView):
             department = DepartmentModel.objects.get(
                 departmentId=request.data.get("department")
             )
-            role = RoleModel.objects.get(roleId=request.data.get("role"))
+            role = RoleModel.objects.get(roleId=request.data.get("roles"))
             claim = claimModel.objects.get(levelId=request.data.get("claim"))
 
             try:

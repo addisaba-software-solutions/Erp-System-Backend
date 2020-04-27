@@ -97,7 +97,7 @@ class claimModel(models.Model):
 
 class OrderModel(models.Model):
     # orderid = models.AutoField(primary_key=True, unique=True)
-    orderNumber = models.IntegerField(primary_key=True, unique=True)
+    orderNumber = models.AutoField(primary_key=True, unique=True)
     company = models.ForeignKey(
         "CompanyModel", to_field="companyId", on_delete=models.CASCADE
     )
@@ -259,7 +259,6 @@ class InvoiceLineItemModel(models.Model):
     itemName = models.CharField(max_length=100)
     unitPrice = models.FloatField(max_length=100)
     quantity = models.IntegerField()
-    # item_discount = models.FloatField(max_length=100)
 
     def __str__(self):
         return str(self.itemName)
