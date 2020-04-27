@@ -210,3 +210,14 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
             "date",
             "invoice_item",
         ]
+
+class OrderStatusSerializer(serializers.ModelSerializer):
+    orderName = serializers.CharField(source='status_order.orderName')
+
+
+    class Meta:
+        model = StatusModel
+        fields = [
+            "orderName",
+            "status",
+        ]
