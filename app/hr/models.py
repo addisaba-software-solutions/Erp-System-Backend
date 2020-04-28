@@ -174,7 +174,7 @@ class CatagoryModel(models.Model):
 class StatusModel(models.Model):
     status = models.CharField(max_length=100, choices=ORDERSTATUS, default="")
     order = models.ForeignKey(
-        "OrderModel", to_field="orderNumber", on_delete=models.CASCADE
+        "OrderModel", to_field="orderNumber", on_delete=models.CASCADE, related_name="status_order"
     )
     date = models.DateField(auto_now=True)
 

@@ -1,5 +1,8 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from django.core import serializers
+import json
+from django.http import JsonResponse
 from .models import (
     claimModel,
     RoleModel,
@@ -34,6 +37,7 @@ from .serializers import (
     SivSerializer,
     InvoiceItemSerializer,
     InvoiceItemLineSerializer,
+    
 )
 
 from rest_framework.views import APIView
@@ -394,6 +398,7 @@ class OrderListAdd(generics.ListCreateAPIView):
     lookup_field = "orderNumber"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
+    
 
     def get(self, request):
 
@@ -514,7 +519,7 @@ class StatusListAdd(generics.ListCreateAPIView):
     lookup_field = "order"
     # authentication_classes=[TokenAuthentication]
     # permission_classes=[IsAuthenticated]
-
+    
     def get(self, request):
 
         return self.list(request)
@@ -522,6 +527,31 @@ class StatusListAdd(generics.ListCreateAPIView):
     def post(self, request):
 
         return self.create(request)
+
+class StatusOrderListAdd(generics.ListCreateAPIView):
+    # serializer_class = OrderStatusSerializer
+    # queryset = StatusModel.objects.all()
+    # lookup_field = "order"
+    # authentication_classes=[TokenAuthentication]
+    # permission_classes=[IsAuthenticated]
+   
+
+    def get(self, request):
+        status = []
+        for orderstatus in StatusModel.objects.all():
+            status.append({
+                "orderNumber":orderstatus.order.orderNumber,
+                "orderName":orderstatus.order.orderName,
+                "salesPerson":orderstatus.order.salesPerson,
+                "description":orderstatus.order.description,
+                "orderDate":str(orderstatus.order.orderDate),
+                "company":str(orderstatus.order.company),
+                "shipmentAddress":orderstatus.order.shipmentAddress,
+                "status":orderstatus.status,
+            })
+
+        return JsonResponse(status, safe=False)
+
 
 
 class ShipmentScheduleRUD(generics.RetrieveUpdateDestroyAPIView):
@@ -716,16 +746,11 @@ def checkAvailability(data):
     updatedItemQuantity = []
 
     for item in items:
-        try:
-            int(item["InventoryItem"])
-        except:
-             return (
-                False,
-                {"itemName": "Please select an item!", "available":"It is not a valid input"},
-             )
+       
         InventoryItemId = item["InventoryItem"]
         orderedItemQuantity = item["quantity"]
-        if item["InventoryItem"] is None:
+
+        if item["InventoryItem"]=="":
             return  (
                 False,
                 {"itemName": "Please select an item!", "available":"It is not a valid input"}),
@@ -734,22 +759,17 @@ def checkAvailability(data):
         availableQuantity = InventoryItemModel.objects.values_list(
             "quantity", flat=True
         ).get(pk=InventoryItemId)
-        if  not isinstance(orderedItemQuantity, int) or orderedItemQuantity<1 :
-            return (
-                False,
-                {"itemName": orderedItemName, "available":availableQuantity},
-            )
-     
-
-        if availableQuantity < orderedItemQuantity:
+       
+        if int(availableQuantity) < int(orderedItemQuantity):
             # this should return the item name and the available item quantity for this itemname
             return (
                 False,
                 {"itemName": orderedItemName, "available": availableQuantity},
             )
-
+    
         newItemQuantity = int(availableQuantity) - int(orderedItemQuantity)
         updatedQuantity = {"itemName": orderedItemName, "quantity": newItemQuantity}
+        
         updatedQuantity_copy = updatedQuantity.copy()
         updatedItemQuantity.append(updatedQuantity_copy)
     return (True, updatedItemQuantity)

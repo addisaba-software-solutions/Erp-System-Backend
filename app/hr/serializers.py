@@ -120,6 +120,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
     itemName=serializers.CharField(read_only=True)
+ 
     class Meta:
         model = ItemModel
         fields = ["itemName", "quantity", "InventoryItem"]
@@ -127,7 +128,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     item_order = ItemSerializer(many=True)
-
+    
     class Meta:
         model = OrderModel
         fields = [
@@ -144,11 +145,9 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         items_data = validated_data.pop("item_order")
         order = OrderModel.objects.create(**validated_data)
-     
-
+    
         for item_data in items_data:
-            itemId=InventoryItemModel.objects.values_list( "InventoryItemId", flat=True).get(itemName=item_data["InventoryItem"])
-            ItemModel.objects.create(order=order,itemName=item_data["InventoryItem"],InventoryItem_id=itemId,quantity=item_data["quantity"])
+            ItemModel.objects.create(order=order,itemName=item_data["InventoryItem"].itemName ,InventoryItem_id=item_data["InventoryItem"].InventoryItemId ,quantity=item_data["quantity"])
          
         return order
 
