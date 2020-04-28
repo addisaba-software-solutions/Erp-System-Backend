@@ -616,9 +616,9 @@ class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
         return self.retrieve(request, order)
 
     def put(self, request, order=None):
-        siv = sivModel.objects.get(order=order)
-        if request.data["sivStatus"] == "Approved":
-            status = StatusModel.objects.get(order_id=siv.order_id)
+        orderstatus = StatusModel.objects.get(order=order)
+        if orderstatus.status == "Created":
+            status = StatusModel.objects.get(order_id=order)
             status.status = "Issued"
             status.save()
 
@@ -653,6 +653,10 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, order=None):
+        invoice = InvoiceModel.objects.get(order=order)
+        status = StatusModel.objects.get(order_id=invoice.order_id)
+        status.status = "Invoiced"
+        status.save()
 
         return self.retrieve(request, order)
 
@@ -715,9 +719,9 @@ def issue_invoice(sender, instance, **kwargs):
                     invoice=invoice, **serializer.validated_data
                 )
 
-        status = StatusModel.objects.get(order_id=instance.order_id)
-        status.status = "Invoiced"
-        status.save()
+        # status = StatusModel.objects.get(order_id=instance.order_id)
+        # status.status = "Invoiced"
+        # status.save()
 
 
 def updateStatus(sender, instance, **kwargs):
@@ -747,13 +751,16 @@ def checkAvailability(data):
     updatedItemQuantity = []
 
     for item in items:
-        orderedItemName = item["itemName"]
+        # orderedItemName = item["itemName"]
         orderedItemQuantity = item["quantity"]
         inventoryItemId = item["InventoryItem"]
         availableQuantity = InventoryItemModel.objects.values_list(
             "quantity", flat=True
         ).get(pk=inventoryItemId)
+        orderedItemName = InventoryItemModel.objects.values_list("itemName", flat=True).get(pk=inventoryItemId)
+
         print(availableQuantity)
+
 
         if availableQuantity < orderedItemQuantity:
             # this should return the item name and the available item quantity for this itemname

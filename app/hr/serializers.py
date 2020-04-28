@@ -150,12 +150,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
         return order
 
-    def stats(self):
-        """
-        Returns a dict of all stats for the player.
-        """
-        return self._stats
-
 
 class OrderReadSerializer(serializers.ModelSerializer):
     class Meta:
