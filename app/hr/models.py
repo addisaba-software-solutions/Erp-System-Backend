@@ -105,7 +105,7 @@ class OrderModel(models.Model):
 
     salesPerson = models.CharField(max_length=100)
     description = models.CharField(max_length=50)
-    orderDate = models.DateField(max_length=20)
+    orderDate = models.DateField(auto_now=True)
     shipmentAddress = models.CharField(max_length=100)
 
     def __str__(self):
@@ -131,7 +131,7 @@ class InventoryItemModel(models.Model):
     discount = models.IntegerField(null=True)
 
     def __str__(self):
-        return str(self.itemName + "(  " + str(self.quantity) + " ) ")
+        return str(self.itemName)
 
 
 """Item which have one to many relation with Order and many to one with catagory"""

@@ -119,6 +119,8 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class ItemSerializer(serializers.ModelSerializer):
+    itemName=serializers.CharField(read_only=True)
+ 
     class Meta:
         model = ItemModel
         fields = ["itemName", "quantity", "InventoryItem"]
@@ -126,7 +128,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     item_order = ItemSerializer(many=True)
-
+    
     class Meta:
         model = OrderModel
         fields = [
@@ -143,11 +145,10 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         items_data = validated_data.pop("item_order")
         order = OrderModel.objects.create(**validated_data)
-        print("the items changed is")
-
+    
         for item_data in items_data:
-            ItemModel.objects.create(order=order, **item_data)
-
+            ItemModel.objects.create(order=order,itemName=item_data["InventoryItem"].itemName ,InventoryItem_id=item_data["InventoryItem"].InventoryItemId ,quantity=item_data["quantity"])
+         
         return order
 
 
@@ -203,15 +204,4 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
             "Tax",
             "date",
             "invoice_item",
-        ]
-
-class OrderStatusSerializer(serializers.ModelSerializer):
-    orderName = serializers.CharField(source='status_order.orderName')
-
-
-    class Meta:
-        model = StatusModel
-        fields = [
-            "orderName",
-            "status",
         ]

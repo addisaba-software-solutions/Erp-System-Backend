@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                 ('orderName', models.CharField(max_length=100)),
                 ('salesPerson', models.CharField(max_length=100)),
                 ('description', models.CharField(max_length=50)),
-                ('orderDate', models.DateField(max_length=20)),
+                ('orderDate', models.DateField(auto_now=True)),
                 ('shipmentAddress', models.CharField(max_length=100)),
                 ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='hr.CompanyModel')),
             ],

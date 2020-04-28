@@ -39,7 +39,7 @@ class AccountListAdd(APIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     lookup_field = "id"
-    permission_classes = (AdminPermissionsAll,)
+    # permission_classes = (AdminPermissionsAll,)
     def get(self, request):
         query_set = User.objects.all()
         serializer = UserSerializer(query_set, context={"request": request}, many=True)
