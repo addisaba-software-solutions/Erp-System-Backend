@@ -101,8 +101,7 @@ class OrderModel(models.Model):
     company = models.ForeignKey(
         "CompanyModel", to_field="companyId", on_delete=models.CASCADE
     )
-    orderName = models.CharField(max_length=100)
-
+   
     salesPerson = models.CharField(max_length=100)
     description = models.CharField(max_length=50)
     orderDate = models.DateField(auto_now=True)

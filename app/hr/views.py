@@ -541,7 +541,6 @@ class StatusOrderListAdd(generics.ListCreateAPIView):
         for orderstatus in StatusModel.objects.all():
             status.append({
                 "orderNumber":orderstatus.order.orderNumber,
-                "orderName":orderstatus.order.orderName,
                 "salesPerson":orderstatus.order.salesPerson,
                 "description":orderstatus.order.description,
                 "orderDate":str(orderstatus.order.orderDate),

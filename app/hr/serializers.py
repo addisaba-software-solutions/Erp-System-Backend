@@ -134,7 +134,6 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = [
             "orderNumber",
             "company",
-            "orderName",
             "salesPerson",
             "description",
             "orderDate",
