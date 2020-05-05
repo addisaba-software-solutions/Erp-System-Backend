@@ -37,7 +37,6 @@ from .serializers import (
     SivSerializer,
     InvoiceItemSerializer,
     InvoiceItemLineSerializer,
-    
 )
 
 from rest_framework.views import APIView
@@ -53,7 +52,6 @@ from rest_framework.status import (
     HTTP_201_CREATED,
     HTTP_204_NO_CONTENT,
 )
-
 from utilities.token import get_token, get_role
 from django.db.models.signals import post_save
 from rest_framework.response import Response
@@ -273,8 +271,23 @@ class ItemRUD(
         return self.retrieve(request, InventoryItemId)
 
     def put(self, request, InventoryItemId=None):
+        if(InventoryItemId=="" or request.data.get("quantity")==""):
+            return Response({"Item":"Item should not empty","item_quantity":"Item quantity is required field"}, status=400)
 
-        return self.update(request, InventoryItemId)
+        else:
+            try:
+                 request.data.get("quantity")
+            except Exception as e:
+                return Response({"Item":"Item should not empty","item_quantity":"Item quantity accept only number"}, status=400) 
+                    
+            quantity = InventoryItemModel.objects.values_list(
+                            "quantity", flat=True
+                        ).get(pk=InventoryItemId)
+            itemQty=int(quantity)+ int(request.data["quantity"])
+            item_model=InventoryItemModel.objects.get(pk=InventoryItemId)
+            item_model.quantity=itemQty
+            item_model.save()    
+            return Response({"Item":InventoryItemId,"item_quantity":itemQty})
 
     def delete(self, request, InventoryItemId=None):
 
@@ -406,55 +419,62 @@ class OrderListAdd(generics.ListCreateAPIView):
 
     def post(self, request):
         # Call checkAvailability when the request arrives
-        available = checkAvailability(request.data)
-        if available[0]:
-            serializer = OrderSerializer(data=request.data,)
-            if serializer.is_valid(raise_exception=True):
-                order = serializer.save()
-                items = ItemModel.objects.filter(order_id=order)
-                warehouseName = ""
-                for item in items:
-                    itemId = item.InventoryItem_id
-                    warehouseName = InventoryItemModel.objects.values_list(
-                        "warehouseName", flat=True
-                    ).get(pk=itemId)
-                siv = sivModel(order_id=order.orderNumber, warehouseName=warehouseName)
-                siv.save()
-                for item in items:
-                    itemName = item.itemName
-                    itemQuantity = item.quantity
-                    item = {
-                        "order_id": order,
-                        "itemName": itemName,
-                        "quantity": itemQuantity,
-                    }
-                    serializer = SivItemListSerializer(data=item)
-                    if serializer.is_valid(raise_exception=True):
-                        sivItemListModel.objects.create(
-                            siv=siv, **serializer.validated_data
-                        )
-                for item in items:
-                    itemName = item.itemName
-                    for itemQty in available[1]:
-        
-                        if itemName == itemQty["itemName"]:
-                            inventoryItem = InventoryItemModel.objects.get(
-                                itemName=itemName
+     
+        if False:
+            return Response({"itemName":"You need to select items to order"},status=400)
+      
+        else:       
+            available = checkAvailability(request.data)
+            if available[0]:
+                serializer = OrderSerializer(data=request.data,)
+                if serializer.is_valid(raise_exception=True):
+                    order = serializer.save()
+                    items = ItemModel.objects.filter(order_id=order)
+                    warehouseName = ""
+                    for item in items:
+                        itemId = item.InventoryItem_id
+                        warehouseName = InventoryItemModel.objects.values_list(
+                            "warehouseName", flat=True
+                        ).get(pk=itemId)
+                    siv = sivModel(order_id=order.orderNumber, warehouseName=warehouseName)
+                    siv.save()
+                    for item in items:
+                        itemName = item.itemName
+                        itemQuantity = item.quantity
+                        item = {
+                            "order_id": order,
+                            "itemName": itemName,
+                            "quantity": itemQuantity,
+                        }
+                        serializer = SivItemListSerializer(data=item)
+                       
+                        if serializer.is_valid(raise_exception=True):
+                            sivItemListModel.objects.create(
+                                siv=siv, **serializer.validated_data
                             )
-                            inventoryItem.quantity = itemQty["quantity"]
-                            inventoryItem.save()
+                           
+                    for item in items:
+                        itemName = item.itemName
+                        for itemQty in available[1]:
+                            
+                            if itemName == itemQty["itemName"]:
+                                inventoryItem = InventoryItemModel.objects.get(
+                                    itemName=itemName
+                                )
+                                inventoryItem.quantity = itemQty["quantity"]
+                                inventoryItem.save()
 
-                return Response({"order success"}, status=HTTP_201_CREATED)
-        else:
-            return Response(
-                {
-                    "Error": "requested for item is not available at the moment",
-                    "item": available[1],
-                    
-                    
-                },
-                status=status.HTTP_404_NOT_FOUND,
-            )
+                    return Response({"order success"}, status=HTTP_201_CREATED)
+            else:
+                return Response(
+                    {
+                        "Error": "requested item is not available at the moment",
+                        "item": available[1],
+                        
+                        
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
 
 class CompanyRUD(generics.RetrieveUpdateDestroyAPIView):
@@ -502,12 +522,12 @@ class StatusRUD(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, order=None):
 
-        return self.retrieve(request, order)
+       return self.retrieve(request, order)
 
     def put(self, request, order=None):
-
-        return self.partial_update(request, order)
-
+       print(request.data) 
+       return  self.partial_update(request, order)
+        
     def delete(self, request, order=None):
 
         return self.destroy(request, order)
@@ -609,13 +629,12 @@ class SIVRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, order=None):
-
         return self.retrieve(request, order)
 
     def put(self, request, order=None):
-        siv = sivModel.objects.get(order=order)
-        if request.data["sivStatus"] == "Approved":
-            status = StatusModel.objects.get(order_id=siv.order_id)
+        orderstatus = StatusModel.objects.get(order=order)
+        if orderstatus.status == "Created":
+            status = StatusModel.objects.get(order_id=order)
             status.status = "Issued"
             status.save()
 
@@ -638,7 +657,7 @@ class InvoiceListAdd(generics.ListAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request):
-
+        
         return self.list(request)
 
 
@@ -650,7 +669,9 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, order=None):
-
+        status = StatusModel.objects.get(order_id=order)
+        status.status = "Invoiced"
+        status.save()
         return self.retrieve(request, order)
 
     # used to delete siv might be deleted depending on the requirements
@@ -658,12 +679,17 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
 
         return self.destroy(request, order)
 
-
 def issue_invoice(sender, instance, **kwargs):
     if instance.status == "Delivered":
         items = ItemModel.objects.filter(order_id=instance.order_id)
         salesPerson = OrderModel.objects.values_list("salesPerson", flat=True).get(
             pk=instance.order_id
+        )
+        companyId = OrderModel.objects.values_list("company", flat=True).get(
+            pk=instance.order_id
+        )
+        company = CompanyModel.objects.get(
+            companyId=companyId
         )
         invoice_dict = {}
         i = 0
@@ -692,6 +718,7 @@ def issue_invoice(sender, instance, **kwargs):
             subTotal=subTotal,
             Tax=tax,
             salesPerson=salesPerson,
+            company=company,
         )
         invoice.save()
         for item in items:
@@ -712,11 +739,6 @@ def issue_invoice(sender, instance, **kwargs):
                     invoice=invoice, **serializer.validated_data
                 )
 
-        status = StatusModel.objects.get(order_id=instance.order_id)
-        status.status = "Invoiced"
-        status.save()
-
-
 def updateStatus(sender, instance, **kwargs):
     """update the status to created"""
     status = StatusModel(status="Created", order_id=instance.orderNumber)
@@ -734,18 +756,15 @@ def updateDeliveryStatus(sender, instance, **kwargs):
 post_save.connect(updateStatus, sender=OrderModel)
 post_save.connect(updateDeliveryStatus, sender=ShipmentScheduleModel)
 
-
 # signal to track if siv is approved and invoice should be generated
 post_save.connect(issue_invoice, sender=StatusModel)
 
 # checkes items availability
 def checkAvailability(data):
-    
     items = data["item_order"]
     updatedItemQuantity = []
 
     for item in items:
-       
         InventoryItemId = item["InventoryItem"]
         orderedItemQuantity = item["quantity"]
 
@@ -758,7 +777,7 @@ def checkAvailability(data):
         availableQuantity = InventoryItemModel.objects.values_list(
             "quantity", flat=True
         ).get(pk=InventoryItemId)
-       
+     
         if int(availableQuantity) < int(orderedItemQuantity):
             # this should return the item name and the available item quantity for this itemname
             return (

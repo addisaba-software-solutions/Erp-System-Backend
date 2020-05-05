@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.response import Response
+from rest_framework import status
 from .models import (
     claimModel,
     RoleModel,
@@ -142,12 +144,11 @@ class OrderSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        items_data = validated_data.pop("item_order")
+        items_data = validated_data.pop("item_order")  
         order = OrderModel.objects.create(**validated_data)
-    
+
         for item_data in items_data:
             ItemModel.objects.create(order=order,itemName=item_data["InventoryItem"].itemName ,InventoryItem_id=item_data["InventoryItem"].InventoryItemId ,quantity=item_data["quantity"])
-         
         return order
 
     def stats(self):
@@ -197,6 +198,7 @@ class InvoiceItemLineSerializer(serializers.ModelSerializer):
 
 class InvoiceItemSerializer(serializers.ModelSerializer):
     invoice_item = InvoiceItemLineSerializer(many=True,)
+    company = CompanySerializer()
 
     class Meta:
         model = InvoiceModel
@@ -209,4 +211,6 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
             "Tax",
             "date",
             "invoice_item",
+            "company",
+            
         ]

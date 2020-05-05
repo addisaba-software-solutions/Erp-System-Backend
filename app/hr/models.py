@@ -15,7 +15,7 @@ class EmployeModel(models.Model):
     lastName = models.CharField(max_length=15, verbose_name="Last name")
     email = models.CharField(max_length=30, unique=True)
     hiredDate = models.DateField(max_length=15, verbose_name="Hired date")
-    telephone = models.CharField(max_length=15)
+    telephone = models.CharField(max_length=15,unique=True)
     birthDate = models.DateField(max_length=15, verbose_name="Birth date")
     department = models.ForeignKey(
         "DepartmentModel",
@@ -53,8 +53,8 @@ class EmployeModel(models.Model):
 
 
 class DepartmentModel(models.Model):
-    departmentId = models.AutoField(primary_key=True, unique=True)
-    departmentName = models.CharField(max_length=20, verbose_name="Department Name")
+    departmentId = models.AutoField(primary_key=True)
+    departmentName = models.CharField(max_length=20, verbose_name="Department Name", unique=True)
 
     def __str__(self):
         return self.departmentName
@@ -137,7 +137,7 @@ class InventoryItemModel(models.Model):
 
 
 class ItemModel(models.Model):
-    # itemId = models.AutoField(primary_key=True, auto_created=True) the same item name should not present in a single order number
+    itemId = models.AutoField(primary_key=True, auto_created=True)
     order = models.ForeignKey(
         OrderModel, related_name="item_order", on_delete=models.CASCADE,
     )
@@ -148,8 +148,8 @@ class ItemModel(models.Model):
     itemName = models.CharField(max_length=100)
     quantity = models.IntegerField(null=False)
 
-    class Meta:
-        unique_together = ("order", "itemName")
+    # class Meta:
+    #     unique_together = ("order", "itemName")
 
     def __str__(self):
         return str(self.itemName)
@@ -207,7 +207,6 @@ class ShipmentScheduleModel(models.Model):
 
 """comapny model reated to employe and order models"""
 
-
 class CompanyModel(models.Model):
     companyId = models.AutoField(primary_key=True, auto_created=True)
     companyName = models.CharField(
@@ -229,6 +228,9 @@ class CompanyModel(models.Model):
 
 class InvoiceModel(models.Model):
     invoiceId = models.AutoField(primary_key=True, auto_created=True)
+    company = models.ForeignKey(
+        "CompanyModel", to_field="companyId", on_delete=models.CASCADE
+    )
     order = models.ForeignKey(
         "OrderModel", to_field="orderNumber", on_delete=models.CASCADE
     )

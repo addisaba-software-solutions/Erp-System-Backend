@@ -146,6 +146,7 @@ class LoginUserSerializer(serializers.ModelSerializer):
                 "id": user.id,
                 "username": user.username,
                 "email": user.email,
+                "is_superuser":user.is_superuser,
                 "department": department,
                 "role": role,
                 "level": level,
