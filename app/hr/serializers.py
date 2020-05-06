@@ -151,12 +151,6 @@ class OrderSerializer(serializers.ModelSerializer):
             ItemModel.objects.create(order=order,itemName=item_data["InventoryItem"].itemName ,InventoryItem_id=item_data["InventoryItem"].InventoryItemId ,quantity=item_data["quantity"])
         return order
 
-    def stats(self):
-        """
-        Returns a dict of all stats for the player.
-        """
-        return self._stats
-
 
 class OrderReadSerializer(serializers.ModelSerializer):
     class Meta:

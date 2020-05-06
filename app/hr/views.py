@@ -669,9 +669,17 @@ class InvoiceRUD(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes=[IsAuthenticated]
 
     def get(self, request, order=None):
+<<<<<<< HEAD
         status = StatusModel.objects.get(order_id=order)
         status.status = "Invoiced"
         status.save()
+=======
+        invoice = InvoiceModel.objects.get(order=order)
+        status = StatusModel.objects.get(order_id=invoice.order_id)
+        status.status = "Invoiced"
+        status.save()
+
+>>>>>>> f63623b7302baf4146f5c816f4b2e3c8d1c18c66
         return self.retrieve(request, order)
 
     # used to delete siv might be deleted depending on the requirements
@@ -739,6 +747,14 @@ def issue_invoice(sender, instance, **kwargs):
                     invoice=invoice, **serializer.validated_data
                 )
 
+<<<<<<< HEAD
+=======
+        # status = StatusModel.objects.get(order_id=instance.order_id)
+        # status.status = "Invoiced"
+        # status.save()
+
+
+>>>>>>> f63623b7302baf4146f5c816f4b2e3c8d1c18c66
 def updateStatus(sender, instance, **kwargs):
     """update the status to created"""
     status = StatusModel(status="Created", order_id=instance.orderNumber)
